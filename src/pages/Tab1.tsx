@@ -1,23 +1,13 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Tab1.css';
+import { IonPage } from "@ionic/react";
+import "./Tab1.css";
+import DendrologicRequests from "../components/DendrologicRequests";
+import { RouteComponentProps } from "react-router";
 
-const Tab1: React.FC = () => {
+const Tab1: React.FC<RouteComponentProps> = ({ match }) => {
+  console.log(match);
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Tab 1</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Tab 1</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer name="Tab 1 page" />
-      </IonContent>
+      <DendrologicRequests match={match} />
     </IonPage>
   );
 };
