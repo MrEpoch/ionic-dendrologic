@@ -12,7 +12,7 @@ const DendrologicRequests: React.FC<ContainerProps> = ({ match }) => {
   return (
     <>
       {requests.georequests.map((request) => (
-        <Link key={request.id} to={`/tab1/${request.id}`}>
+        <Link key={request.id} to={`/geo/${request.id}`}>
           {request.name}
         </Link>
       ))}

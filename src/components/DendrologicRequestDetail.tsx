@@ -29,7 +29,6 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
 
   return (
     <>
-
       <GeoLocationComponent geoJSONdata={data?.geojson} />
     </>
   );
