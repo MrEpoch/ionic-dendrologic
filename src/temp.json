@@ -10,7 +10,9 @@
         "features": [
           {
             "type": "Feature",
-            "properties": {},
+            "properties": {
+              "name": "Školní kontrola"
+            },
             "geometry": {
               "type": "Polygon",
               "coordinates": [
@@ -86,7 +88,9 @@
           },
           {
             "type": "Feature",
-            "properties": {},
+            "properties": {
+              "name": "Školní kontrola"
+            },
             "geometry": {
               "coordinates": [
                 [
@@ -102,7 +106,9 @@
           },
           {
             "type": "Feature",
-            "properties": {},
+            "properties": {
+              "name": "Školní kontrola"
+            },
             "geometry": {
               "coordinates": [
                 [

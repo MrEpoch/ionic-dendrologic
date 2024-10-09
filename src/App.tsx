@@ -1,18 +1,6 @@
 import { Redirect, Route, RouteComponentProps } from "react-router-dom";
-import {
-  IonApp,
-  IonIcon,
-  IonLabel,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
-  setupIonicReact,
-} from "@ionic/react";
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import Tab1 from "./pages/Tab1";
-import Tab2 from "./pages/Tab2";
-import Tab3 from "./pages/Tab3";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -44,7 +32,7 @@ import "@ionic/react/css/palettes/dark.system.css";
 /* Theme variables */
 import "./theme/variables.css";
 import DendrologicRequestDetailPage from "./pages/DendrologicDetailPage";
-import Tabs from "./components/tabs";
+import Tabs from "./components/MainTabs";
 import GeoTabs from "./components/GeoTabs";
 
 setupIonicReact();
@@ -54,11 +42,14 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         <Route exact path="/">
-          <Redirect to="/tab" />
+          <Redirect to="/map/requests" />
         </Route>
-        <Route path="/tab" component={Tabs} />
-        <Route path="/geo" component={GeoTabs} />
-        <Route path={"/geo/:id"} component={DendrologicRequestDetailPage} />
+        <Route path="/map" component={Tabs} />
+        <Route path="/map-requests" component={GeoTabs} />
+        <Route
+          path={"/map-request/:id"}
+          component={DendrologicRequestDetailPage}
+        />
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>

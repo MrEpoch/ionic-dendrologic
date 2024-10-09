@@ -1,6 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./Geolocation.css";
-import { GeoJSON, MapContainer, TileLayer, useMapEvent } from "react-leaflet";
+import {
+  GeoJSON,
+  MapContainer,
+  TileLayer,
+  Tooltip,
+  useMapEvent,
+  useMapEvents,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css"; // Re-uses images from ~leaflet package
@@ -20,7 +27,7 @@ function AnimatedPanningElement() {
 // currentRequest = current one request, with geojson data, photos and more
 // It should represent one instance for dendrologic mapping
 
-export default function GeoLocationComponent({ geoJSONdata }) {
+export default function GeoLocationComponent({ geoJSONdata, shown = false }) {
   const [coordinates, setCoordinates] = useState<Position | null>(null);
   // no any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,7 +36,8 @@ export default function GeoLocationComponent({ geoJSONdata }) {
   const GPSenabledRef = useRef<boolean>(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [modalData, setModalData] = useState<any>(null);
+
+  const [hoverInfo, setHoverInfo] = useState(null);
 
   async function validateGPS() {
     const status = await checkIfGPSEnabled();
@@ -116,14 +124,25 @@ export default function GeoLocationComponent({ geoJSONdata }) {
     });
   }
 
+  const onHover = useCallback((event) => {
+    const {
+      features,
+      point: { x, y },
+    } = event;
+    const hoveredFeature = features && features[0];
+
+    // prettier-ignore
+    setHoverInfo(hoveredFeature && {feature: hoveredFeature, x, y});
+  }, []);
+
   return (
-    <>
+    <div className={shown ? "hidden-container" : "map-container"}>
       {GPSenabledRef.current &&
         typeof coordinates?.coords.latitude === "number" && (
           <MapContainer
             className="map-container"
+            onMouseMove={onHover}
             zoom={13}
-            scrollWheelZoom={false}
             center={[
               coordinates?.coords.latitude,
               coordinates?.coords.longitude,
@@ -134,21 +153,39 @@ export default function GeoLocationComponent({ geoJSONdata }) {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <AnimatedPanningElement />
-            {geoJSONdata &&
+            {geoJSONdata && (
               <GeoJSON
                 eventHandlers={{
-                  onEachFeature: (feature: unknown, layer: unknown) => {
-                    layer.on("click", () => {
-                      console.log(feature?.properties);
-                      btnRef.current?.click();
+                  click: (geo: unknown) => {
+                    console.log(geo);
+                    setHoverInfo({
+                      x: geo.containerPoint.x,
+                      y: geo.containerPoint.y,
+                      properties: geo.layer.feature.properties,
                     });
                   },
                 }}
                 data={geoJSONdata}
               />
-            }
+            )}
+            <HoverComponent hoverInfo={hoverInfo} />
           </MapContainer>
         )}
-      </>
+    </div>
+  );
+}
+
+function HoverComponent({ hoverInfo }) {
+  return (
+    <>
+      <p>tf is happening</p>
+      {hoverInfo && (
+        <>
+          <Tooltip>
+            <div className="tooltip-text">{hoverInfo?.properties?.name}</div>
+          </Tooltip>
+        </>
+      )}
+    </>
   );
 }

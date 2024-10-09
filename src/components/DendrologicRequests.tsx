@@ -1,6 +1,6 @@
 import "./ExploreContainer.css";
 import requests from "../temp.json";
-import { IonItem, IonLabel } from "@ionic/react";
+import { IonItem, IonLabel, IonList } from "@ionic/react";
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
 
@@ -11,11 +11,15 @@ interface ContainerProps {
 const DendrologicRequests: React.FC<ContainerProps> = ({ match }) => {
   return (
     <>
-      {requests.georequests.map((request) => (
-        <Link key={request.id} to={`/geo/${request.id}`}>
-          {request.name}
-        </Link>
-      ))}
+      <IonList inset={true}>
+        {requests.georequests.map((request) => (
+          <IonItem>
+            <Link key={request.id} to={`/map-request/${request.id}`}>
+              {request.name}
+            </Link>
+          </IonItem>
+        ))}
+      </IonList>
     </>
   );
 };
