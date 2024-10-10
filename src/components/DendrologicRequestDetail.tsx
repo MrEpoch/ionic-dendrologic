@@ -6,6 +6,7 @@ import { IonFab, IonFabButton, IonIcon } from "@ionic/react";
 import { add, mapOutline } from "ionicons/icons";
 import React, { useMemo, useState } from "react";
 import GeoLocationComponent from "./Geolocation";
+import DendrologicDetailInfo from "./DendrologicDetailInfo";
 
 const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
   match,
@@ -14,6 +15,10 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
   const zodValidateId = z.string().uuid();
   const [data, setData] = useState<any | null>(null);
   const [mapShown, setMapShown] = useState(false);
+
+  function updateShown() {
+    setMapShown(!mapShown);
+  }
 
   useMemo(() => {
     const validateId = zodValidateId.safeParse(match?.params.id);
@@ -37,7 +42,13 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
           <IonIcon icon={mapOutline}></IonIcon>
         </IonFabButton>
       </IonFab>
-      <GeoLocationComponent shown={mapShown} geoJSONdata={data?.geojson} />
+
+      <DendrologicDetailInfo shown={mapShown} info={data} />
+      <GeoLocationComponent
+        updateShown={updateShown}
+        shown={mapShown}
+        geoJSONdata={data?.geojson}
+      />
     </>
   );
 };

@@ -27,7 +27,11 @@ function AnimatedPanningElement() {
 // currentRequest = current one request, with geojson data, photos and more
 // It should represent one instance for dendrologic mapping
 
-export default function GeoLocationComponent({ geoJSONdata, shown = false }) {
+export default function GeoLocationComponent({
+  geoJSONdata,
+  shown = false,
+  updateShown,
+}) {
   const [coordinates, setCoordinates] = useState<Position | null>(null);
   // no any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,7 +61,7 @@ export default function GeoLocationComponent({ geoJSONdata, shown = false }) {
   }
 
   useEffect(() => {
-    const interval = setInterval(validateGPS, 5000);
+    const interval = setInterval(validateGPS, 1000);
 
     return () => {
       if (typeof watchRef.current === "string") {
@@ -163,10 +167,17 @@ export default function GeoLocationComponent({ geoJSONdata, shown = false }) {
                       y: geo.containerPoint.y,
                       properties: geo.layer.feature.properties,
                     });
+                    updateShown();
                   },
                 }}
                 data={geoJSONdata}
-              />
+              >
+                {hoverInfo && (
+                  <Tooltip>
+                    <p>{hoverInfo.properties.name}</p>
+                  </Tooltip>
+                )}
+              </GeoJSON>
             )}
             <HoverComponent hoverInfo={hoverInfo} />
           </MapContainer>
@@ -176,13 +187,24 @@ export default function GeoLocationComponent({ geoJSONdata, shown = false }) {
 }
 
 function HoverComponent({ hoverInfo }) {
+  const map = useMapEvents({
+    click: (e) => {
+      console.log(map.getCenter());
+    },
+  });
+
   return (
     <>
-      <p>tf is happening</p>
       {hoverInfo && (
         <>
           <Tooltip>
-            <div className="tooltip-text">{hoverInfo?.properties?.name}</div>
+            <button
+              onClick={() => {
+                console.log(hoverInfo);
+              }}
+            >
+              Action button
+            </button>
           </Tooltip>
         </>
       )}

@@ -11,7 +11,9 @@
           {
             "type": "Feature",
             "properties": {
-              "name": "Školní kontrola"
+              "name": "Polygon",
+              "id": "e7d0a0a8-7b0f-11ed-ae05-0242ac120003",
+              "hasImage": false
             },
             "geometry": {
               "type": "Polygon",
@@ -89,7 +91,9 @@
           {
             "type": "Feature",
             "properties": {
-              "name": "Školní kontrola"
+              "name": "Polygon",
+              "id": "q9f5c9f6c8-7b0f-11ed-ae05-0242ac120003",
+              "hasImage": false
             },
             "geometry": {
               "coordinates": [
@@ -107,7 +111,9 @@
           {
             "type": "Feature",
             "properties": {
-              "name": "Školní kontrola"
+              "name": "Polygon",
+              "id": "l7d0a0a8-7b0f-11ed-ae05-0242ac120003",
+              "hasImage": false
             },
             "geometry": {
               "coordinates": [
