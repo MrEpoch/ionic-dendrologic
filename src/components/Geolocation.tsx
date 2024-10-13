@@ -173,8 +173,8 @@ export default function GeoLocationComponent({
                 data={geoJSONdata}
               >
                 {hoverInfo && (
-                  <Tooltip>
-                    <p>{hoverInfo.properties.name}</p>
+                  <Tooltip key={hoverInfo?.properties?.name}>
+                    <p>{hoverInfo?.properties?.name}</p>
                   </Tooltip>
                 )}
               </GeoJSON>
