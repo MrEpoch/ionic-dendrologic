@@ -2,11 +2,12 @@ import { RouteComponentProps } from "react-router";
 import "./ExploreContainer.css";
 import { z } from "zod";
 import requests from "../temp.json";
-import { IonFab, IonFabButton, IonIcon } from "@ionic/react";
+import { IonButton, IonFab, IonFabButton, IonIcon } from "@ionic/react";
 import { add, mapOutline } from "ionicons/icons";
 import React, { useMemo, useState } from "react";
 import GeoLocationComponent from "./Geolocation";
 import DendrologicDetailInfo from "./DendrologicDetailInfo";
+import DendrologicInfoModal from "./DendrologicInfoModal";
 
 const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
   match,
@@ -14,6 +15,7 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
 }) => {
   const zodValidateId = z.string().uuid();
   const [data, setData] = useState<any | null>(null);
+  const [selectedData, setSelectedData] = useState<any | null>(null);
   const [mapShown, setMapShown] = useState(false);
 
   function updateShown() {
@@ -37,18 +39,21 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
 
   return (
     <>
+    {/*
       <IonFab slot="fixed" vertical="top" horizontal="end">
         <IonFabButton onClick={() => setMapShown(!mapShown)}>
           <IonIcon icon={mapOutline}></IonIcon>
         </IonFabButton>
       </IonFab>
-
       <DendrologicDetailInfo shown={mapShown} info={data} />
+    */}
       <GeoLocationComponent
         updateShown={updateShown}
+        selectData={setSelectedData}
         shown={mapShown}
         geoJSONdata={data?.geojson}
       />
+      <DendrologicInfoModal info={data} isOpen={mapShown} />
     </>
   );
 };

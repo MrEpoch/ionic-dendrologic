@@ -29,8 +29,8 @@ function AnimatedPanningElement() {
 
 export default function GeoLocationComponent({
   geoJSONdata,
-  shown = false,
   updateShown,
+  selectData,
 }) {
   const [coordinates, setCoordinates] = useState<Position | null>(null);
   // no any
@@ -128,24 +128,12 @@ export default function GeoLocationComponent({
     });
   }
 
-  const onHover = useCallback((event) => {
-    const {
-      features,
-      point: { x, y },
-    } = event;
-    const hoveredFeature = features && features[0];
-
-    // prettier-ignore
-    setHoverInfo(hoveredFeature && {feature: hoveredFeature, x, y});
-  }, []);
-
   return (
-    <div className={shown ? "hidden-container" : "map-container"}>
+    <div className={"map-container"}>
       {GPSenabledRef.current &&
         typeof coordinates?.coords.latitude === "number" && (
           <MapContainer
             className="map-container"
-            onMouseMove={onHover}
             zoom={13}
             center={[
               coordinates?.coords.latitude,
@@ -162,52 +150,16 @@ export default function GeoLocationComponent({
                 eventHandlers={{
                   click: (geo: unknown) => {
                     console.log(geo);
-                    setHoverInfo({
-                      x: geo.containerPoint.x,
-                      y: geo.containerPoint.y,
-                      properties: geo.layer.feature.properties,
-                    });
+                    selectData(geo.layer.feature.properties);
                     updateShown();
                   },
                 }}
                 data={geoJSONdata}
               >
-                {hoverInfo && (
-                  <Tooltip key={hoverInfo?.properties?.name}>
-                    <p>{hoverInfo?.properties?.name}</p>
-                  </Tooltip>
-                )}
               </GeoJSON>
             )}
-            <HoverComponent hoverInfo={hoverInfo} />
           </MapContainer>
         )}
     </div>
-  );
-}
-
-function HoverComponent({ hoverInfo }) {
-  const map = useMapEvents({
-    click: (e) => {
-      console.log(map.getCenter());
-    },
-  });
-
-  return (
-    <>
-      {hoverInfo && (
-        <>
-          <Tooltip>
-            <button
-              onClick={() => {
-                console.log(hoverInfo);
-              }}
-            >
-              Action button
-            </button>
-          </Tooltip>
-        </>
-      )}
-    </>
   );
 }

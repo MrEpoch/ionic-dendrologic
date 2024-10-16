@@ -18,36 +18,30 @@ export function usePhotoGallery() {
   const [photos, setPhotos] = useState<UserPhoto[]>([]);
 
   const savePicture = async (photo: Photo, fileName: string): Promise<UserPhoto> => {
-    let base64Data: string | Blob;
+    let base64Data: string = photo.base64String as string;
 
     console.log("Photo is", photo);
 
     // "hybrid" will detect Cordova or Capacitor;
 
-    if (isPlatform('hybrid')) {
-      const file = await Filesystem.readFile({
-        path: photo.path!,
-      });
-      base64Data = file.data;
-    } else {
-      base64Data = await base64FromPath(photo.webPath!);
-    }
     const savedFile = await Filesystem.writeFile({
       path: fileName,
       data: base64Data,
       directory: Directory.Data,
     });
+    console.log(Capacitor.convertFileSrc(savedFile.uri));
+    console.log(base64Data.toString().length)
 
-    const formData = new FormData();
-    formData.append('image', base64Data);
+    const imageJson = {
+      image: photo.base64String as string
+    };
     try {
       const res = await CapacitorHttp.post({
         url: 'https://dendrologic-web.stencukpage.com/api/images',
-//      url: "http://localhost:3000/api/images",
-        data: formData,
-        dataType: 'formData',
+//        url: "http://localhost:3000/api/images",
+        data: imageJson,
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         }
       })
       console.log(res);
@@ -73,7 +67,8 @@ export function usePhotoGallery() {
 
   const takePhoto = async () => {
     const photo = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
+      resultType: CameraResultType.Base64,
+      saveToGallery: true,
       source: CameraSource.Camera,
       quality: 100,
     });
