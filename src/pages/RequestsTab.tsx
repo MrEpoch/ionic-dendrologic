@@ -15,7 +15,7 @@ const RequestsTab: React.FC<RouteComponentProps> = ({ match }) => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Dendrologic requests</IonTitle>
+          <IonTitle>Dendrologic requests <p className="text-red-500">hello</p></IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

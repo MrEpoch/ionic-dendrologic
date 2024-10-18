@@ -51,6 +51,7 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
         updateShown={updateShown}
         selectData={setSelectedData}
         shown={mapShown}
+        location={data?.location}
         geoJSONdata={data?.geojson}
       />
       <DendrologicInfoModal info={data} isOpen={mapShown} />

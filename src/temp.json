@@ -5,6 +5,7 @@
       "name": "Školní kontrola",
       "created_at": "2022-12-06T11:33:20.000000Z",
       "updated_at": "2022-12-06T11:33:20.000000Z",
+      "location": [49.601647948761716, 13.567165911748164],
       "geojson": {
         "type": "FeatureCollection",
         "features": [

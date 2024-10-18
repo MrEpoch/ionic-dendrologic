@@ -31,6 +31,7 @@ export default function GeoLocationComponent({
   geoJSONdata,
   updateShown,
   selectData,
+  location
 }) {
   const [coordinates, setCoordinates] = useState<Position | null>(null);
   // no any
@@ -62,6 +63,7 @@ export default function GeoLocationComponent({
 
   useEffect(() => {
     const interval = setInterval(validateGPS, 1000);
+    console.log(geoJSONdata);
 
     return () => {
       if (typeof watchRef.current === "string") {
@@ -131,13 +133,13 @@ export default function GeoLocationComponent({
   return (
     <div className={"map-container"}>
       {GPSenabledRef.current &&
-        typeof coordinates?.coords.latitude === "number" && (
+        location && (
           <MapContainer
             className="map-container"
             zoom={13}
             center={[
-              coordinates?.coords.latitude,
-              coordinates?.coords.longitude,
+              location[0],
+              location[1],
             ]}
           >
             <TileLayer

@@ -1,2 +1,15 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ion-color-primary: #13ae5a; /* Main primary color (green) */
+  --ion-color-primary-rgb: 19, 174, 90; /* RGB equivalent of the primary color */
+  --ion-color-primary-contrast: #ffffff; /* Color that contrasts well with primary (white) */
+  --ion-color-primary-contrast-rgb: 255, 255, 255; /* RGB equivalent of the contrast color */
+  --ion-color-primary-shade: #005a00; /* A darker shade of the primary color */
+  --ion-color-primary-tint: #1a751a; /* A lighter tint of the primary color */
+}

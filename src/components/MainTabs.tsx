@@ -17,28 +17,28 @@ export default function MainTabs() {
   return (
     <IonTabs>
       <IonRouterOutlet>
-        <Route exact path="/map/requests">
+        <Route exact path="/main/requests">
           <RequestsTab />
         </Route>
-        <Route exact path="/map/tab2">
+        <Route exact path="/main/tab2">
           <Tab2 />
         </Route>
-        <Route exact path="/map/tab3">
+        <Route exact path="/main/account">
           <Tab3 />
         </Route>
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
-        <IonTabButton tab="tab1" href="/map/requests">
+        <IonTabButton tab="tab1" href="/main/requests">
           <IonIcon aria-hidden="true" icon={triangle} />
           <IonLabel>Requests</IonLabel>
         </IonTabButton>
-        <IonTabButton tab="tab2" href="/map/tab2">
+        <IonTabButton tab="tab2" href="/main/tab2">
           <IonIcon aria-hidden="true" icon={ellipse} />
-          <IonLabel>Global map</IonLabel>
+          <IonLabel>Global main</IonLabel>
         </IonTabButton>
-        <IonTabButton tab="tab3" href="/map/tab3">
+        <IonTabButton tab="tab3" href="/main/account">
           <IonIcon aria-hidden="true" icon={square} />
-          <IonLabel>Processed</IonLabel>
+          <IonLabel>Account</IonLabel>
         </IonTabButton>
       </IonTabBar>
     </IonTabs>

@@ -34,6 +34,7 @@ import "./theme/variables.css";
 import DendrologicRequestDetailPage from "./pages/DendrologicDetailPage";
 import Tabs from "./components/MainTabs";
 import GeoTabs from "./components/GeoTabs";
+import AuthRouting from "./components/AuthRouting";
 
 setupIonicReact();
 
@@ -42,13 +43,17 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         <Route exact path="/">
-          <Redirect to="/map/requests" />
+          <Redirect to="/main/requests" />
         </Route>
-        <Route path="/map" component={Tabs} />
+        <Route path="/main" component={Tabs} />
         <Route path="/map-requests" component={GeoTabs} />
         <Route
           path={"/map-request/:id"}
           component={DendrologicRequestDetailPage}
+        />
+        <Route
+          path={"/auth"}
+          component={AuthRouting}
         />
       </IonRouterOutlet>
     </IonReactRouter>
