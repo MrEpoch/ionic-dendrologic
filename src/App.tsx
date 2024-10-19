@@ -35,6 +35,7 @@ import DendrologicRequestDetailPage from "./pages/DendrologicDetailPage";
 import Tabs from "./components/MainTabs";
 import GeoTabs from "./components/GeoTabs";
 import AuthRouting from "./components/AuthRouting";
+import { SuperTokensProvider } from "./components/ui/superTokenProvider";
 
 setupIonicReact();
 
@@ -42,19 +43,21 @@ const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
-        <Route exact path="/">
-          <Redirect to="/main/requests" />
-        </Route>
-        <Route path="/main" component={Tabs} />
-        <Route path="/map-requests" component={GeoTabs} />
-        <Route
-          path={"/map-request/:id"}
-          component={DendrologicRequestDetailPage}
-        />
-        <Route
-          path={"/auth"}
-          component={AuthRouting}
-        />
+        <SuperTokensProvider>
+          <Route exact path="/">
+            <Redirect to="/main/requests" />
+          </Route>
+          <Route path="/main" component={Tabs} />
+          <Route path="/map-requests" component={GeoTabs} />
+          <Route
+            path={"/map-request/:id"}
+            component={DendrologicRequestDetailPage}
+          />
+          <Route
+            path={"/auth"}
+            component={AuthRouting}
+          />
+        </SuperTokensProvider>
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
