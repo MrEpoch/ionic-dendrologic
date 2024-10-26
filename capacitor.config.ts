@@ -6,9 +6,9 @@ const config: CapacitorConfig = {
   webDir: "dist",
   plugins: {
     CapacitorHttp: {
-      enabled: true
-    }
-  }
+      enabled: true,
+    },
+  },
 };
 
 export default config;

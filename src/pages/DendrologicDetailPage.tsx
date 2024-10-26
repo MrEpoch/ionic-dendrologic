@@ -6,7 +6,6 @@ import {
   IonPage,
   IonToolbar,
 } from "@ionic/react";
-import "./Tab1.css";
 import { RouteComponentProps } from "react-router";
 import DendrologicRequestDetail from "../components/DendrologicRequestDetail";
 

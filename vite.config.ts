@@ -8,16 +8,19 @@ import tailwindcss from "tailwindcss";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), legacy()],
+  resolve: {
+    alias: {
+      "@": "/src",
+    }
+  },
   test: {
     globals: true,
     environment: "jsdom",
     setupFiles: "./src/setupTests.ts",
   },
   css: {
-   postcss: {
-    plugins: [tailwindcss()],
-   },
+    postcss: {
+      plugins: [tailwindcss()],
+    },
   },
 });
-
-

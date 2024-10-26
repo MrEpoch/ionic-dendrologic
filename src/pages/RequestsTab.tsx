@@ -5,7 +5,6 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import "./Tab1.css";
 import DendrologicRequests from "../components/DendrologicRequests";
 import { RouteComponentProps } from "react-router";
 
@@ -15,7 +14,9 @@ const RequestsTab: React.FC<RouteComponentProps> = ({ match }) => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Dendrologic requests <p className="text-red-500">hello</p></IonTitle>
+          <IonTitle>
+            Dendrologic requests
+          </IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

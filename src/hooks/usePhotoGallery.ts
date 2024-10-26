@@ -1,23 +1,32 @@
-import { useState, useEffect } from 'react';
-import { isPlatform } from '@ionic/react';
+import { useState, useEffect } from "react";
+import { isPlatform } from "@ionic/react";
 
-import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
-import { Filesystem, Directory } from '@capacitor/filesystem';
-import { Preferences } from '@capacitor/preferences';
-import { Capacitor, CapacitorHttp } from '@capacitor/core';
+import {
+  Camera,
+  CameraResultType,
+  CameraSource,
+  Photo,
+} from "@capacitor/camera";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Preferences } from "@capacitor/preferences";
+import { Capacitor, CapacitorHttp } from "@capacitor/core";
+import { useHistory } from "react-router";
 
 export interface UserPhoto {
   filepath: string;
   webviewPath?: string;
 }
 
-const PHOTO_STORAGE = 'photos';
+const PHOTO_STORAGE = "photos";
 
 export function usePhotoGallery() {
-
   const [photos, setPhotos] = useState<UserPhoto[]>([]);
+  const history = useHistory();
 
-  const savePicture = async (photo: Photo, fileName: string): Promise<UserPhoto> => {
+  const savePicture = async (
+    photo: Photo,
+    fileName: string,
+  ): Promise<UserPhoto> => {
     let base64Data: string = photo.base64String as string;
 
     console.log("Photo is", photo);
@@ -30,27 +39,27 @@ export function usePhotoGallery() {
       directory: Directory.Data,
     });
     console.log(Capacitor.convertFileSrc(savedFile.uri));
-    console.log(base64Data.toString().length)
+    console.log(base64Data.toString().length);
 
     const imageJson = {
-      image: photo.base64String as string
+      image: photo.base64String as string,
     };
+
     try {
       const res = await CapacitorHttp.post({
-        url: 'https://dendrologic-web.stencukpage.com/api/images',
-//        url: "http://localhost:3000/api/images",
+        url: "https://dendrologic-web.stencukpage.com/api/images",
+               // url: "http://localhost:3752/api/images",
         data: imageJson,
         headers: {
-          'Content-Type': 'application/json',
-        }
-      })
+          "Content-Type": "application/json",
+        },
+      });
       console.log(res);
     } catch (e) {
       console.error(e);
     }
 
-
-    if (isPlatform('hybrid')) {
+    if (isPlatform("hybrid")) {
       return {
         filepath: savedFile.uri,
         webviewPath: Capacitor.convertFileSrc(savedFile.uri),
@@ -73,7 +82,7 @@ export function usePhotoGallery() {
       quality: 100,
     });
 
-    const fileName = Date.now() + '.jpeg';
+    const fileName = Date.now() + ".jpeg";
     const savedFileImage = await savePicture(photo, fileName);
     const newPhotos = [savedFileImage, ...photos];
     setPhotos(newPhotos);
@@ -83,9 +92,11 @@ export function usePhotoGallery() {
   useEffect(() => {
     const loadSaved = async () => {
       const { value } = await Preferences.get({ key: PHOTO_STORAGE });
-      const photosInPreferences = (value ? JSON.parse(value) : []) as UserPhoto[];
+      const photosInPreferences = (
+        value ? JSON.parse(value) : []
+      ) as UserPhoto[];
 
-      if (!isPlatform('hybrid')) {
+      if (!isPlatform("hybrid")) {
         for (let photo of photosInPreferences) {
           const file = await Filesystem.readFile({
             path: photo.filepath,
@@ -97,14 +108,14 @@ export function usePhotoGallery() {
       }
 
       setPhotos(photosInPreferences);
-    }
+    };
 
     loadSaved();
   }, []);
 
   return {
     takePhoto,
-    photos
+    photos,
   };
 }
 
@@ -115,10 +126,10 @@ export async function base64FromPath(path: string): Promise<string> {
     const reader = new FileReader();
     reader.onerror = reject;
     reader.onload = () => {
-      if (typeof reader.result === 'string') {
+      if (typeof reader.result === "string") {
         resolve(reader.result);
       } else {
-        reject('method did not return a string');
+        reject("method did not return a string");
       }
     };
     reader.readAsDataURL(blob);

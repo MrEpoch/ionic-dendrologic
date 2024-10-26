@@ -31,7 +31,7 @@ export default function GeoLocationComponent({
   geoJSONdata,
   updateShown,
   selectData,
-  location
+  location,
 }) {
   const [coordinates, setCoordinates] = useState<Position | null>(null);
   // no any
@@ -132,36 +132,31 @@ export default function GeoLocationComponent({
 
   return (
     <div className={"map-container"}>
-      {GPSenabledRef.current &&
-        location && (
-          <MapContainer
-            className="map-container"
-            zoom={13}
-            center={[
-              location[0],
-              location[1],
-            ]}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <AnimatedPanningElement />
-            {geoJSONdata && (
-              <GeoJSON
-                eventHandlers={{
-                  click: (geo: unknown) => {
-                    console.log(geo);
-                    selectData(geo.layer.feature.properties);
-                    updateShown();
-                  },
-                }}
-                data={geoJSONdata}
-              >
-              </GeoJSON>
-            )}
-          </MapContainer>
-        )}
+      {GPSenabledRef.current && location && (
+        <MapContainer
+          className="map-container"
+          zoom={13}
+          center={[location[0], location[1]]}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <AnimatedPanningElement />
+          {geoJSONdata && (
+            <GeoJSON
+              eventHandlers={{
+                click: (geo: unknown) => {
+                  console.log(geo);
+                  selectData(geo.layer.feature.properties);
+                  updateShown();
+                },
+              }}
+              data={geoJSONdata}
+            ></GeoJSON>
+          )}
+        </MapContainer>
+      )}
     </div>
   );
 }

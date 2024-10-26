@@ -13,15 +13,11 @@ import { usePhotoGallery } from "../hooks/usePhotoGallery";
 export default function DendrologicDetailInfo({ info, shown }) {
   function handleCamera() {}
 
-
-
   return (
     <>
       {shown && (
         <IonContent color="light">
-          <IonList inset={true}>
-                          ))}
-          </IonList>
+          <IonList inset={true}></IonList>
         </IonContent>
       )}
     </>

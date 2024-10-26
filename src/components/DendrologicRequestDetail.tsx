@@ -1,12 +1,8 @@
 import { RouteComponentProps } from "react-router";
-import "./ExploreContainer.css";
 import { z } from "zod";
 import requests from "../temp.json";
-import { IonButton, IonFab, IonFabButton, IonIcon } from "@ionic/react";
-import { add, mapOutline } from "ionicons/icons";
 import React, { useMemo, useState } from "react";
 import GeoLocationComponent from "./Geolocation";
-import DendrologicDetailInfo from "./DendrologicDetailInfo";
 import DendrologicInfoModal from "./DendrologicInfoModal";
 
 const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
@@ -39,7 +35,7 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
 
   return (
     <>
-    {/*
+      {/*
       <IonFab slot="fixed" vertical="top" horizontal="end">
         <IonFabButton onClick={() => setMapShown(!mapShown)}>
           <IonIcon icon={mapOutline}></IonIcon>

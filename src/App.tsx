@@ -32,10 +32,9 @@ import "@ionic/react/css/palettes/dark.system.css";
 /* Theme variables */
 import "./theme/variables.css";
 import DendrologicRequestDetailPage from "./pages/DendrologicDetailPage";
-import Tabs from "./components/MainTabs";
-import GeoTabs from "./components/GeoTabs";
-import AuthRouting from "./components/AuthRouting";
-import { SuperTokensProvider } from "./components/ui/superTokenProvider";
+import MainTabs from "./components/navigation/MainTabs";
+import GeoTabs from "./components/navigation/GeoTabs";
+import AuthRouting from "./components/navigation/AuthRouting";
 
 setupIonicReact();
 
@@ -43,21 +42,16 @@ const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
-        <SuperTokensProvider>
-          <Route exact path="/">
-            <Redirect to="/main/requests" />
-          </Route>
-          <Route path="/main" component={Tabs} />
-          <Route path="/map-requests" component={GeoTabs} />
-          <Route
-            path={"/map-request/:id"}
-            component={DendrologicRequestDetailPage}
-          />
-          <Route
-            path={"/auth"}
-            component={AuthRouting}
-          />
-        </SuperTokensProvider>
+        <Route exact path="/">
+          <Redirect to="/main/requests" />
+        </Route>
+        <Route path="/main" component={MainTabs} />
+        <Route path="/map-requests" component={GeoTabs} />
+        <Route
+          path={"/map-request/:id"}
+          component={DendrologicRequestDetailPage}
+        />
+        <Route path={"/auth"} component={AuthRouting} />
       </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
