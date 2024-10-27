@@ -81,7 +81,7 @@ export const formSchemaCode = z
     code: z
       .string()
       .min(6, { message: "Code must be 6 characters or more" })
-      .max(6, { message: "Code must be 6 characters or less" }),
+      .max(28, { message: "Code must be 28 characters or less" }),
   })
   .required();
 

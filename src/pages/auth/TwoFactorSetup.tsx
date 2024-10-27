@@ -1,6 +1,6 @@
 import { api_url, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { TwoFactorSetUpForm } from "@/components/auth/TwoFactorSetUpForm";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
@@ -13,12 +13,8 @@ export default function Page() {
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [encodedTOTPKey, setEncodedTOTPKey] = useState<string>("");
 
-
-  useEffect(() => {
-    async function fetchData() {
-
-      try {
-        // Check rate limit
+  const fetchData = useCallback(async () => {
+    try {
         let token = null;
         try {
           token = await SecureStoragePlugin.get({ key: sessionName });
@@ -51,10 +47,11 @@ export default function Page() {
         console.error('Error fetching data:', error);
         setLoading(false);
       }
-    }
+    }, [history]);
 
+  useEffect(() => {
     fetchData();
-  }, [history]);
+  }, [fetchData]);
 
   if (loading) return <div>Loading...</div>;
 

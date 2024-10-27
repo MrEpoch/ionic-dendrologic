@@ -16,37 +16,37 @@ export default function AuthRouting() {
   return (
     <IonPage>
       <IonRouterOutlet>
-        <Route key={Math.random()} exact path="/auth/login">
+        <Route key={Math.random() * Math.random()} exact path="/auth/login">
           <LoginPage />
         </Route>
-        <Route key={Math.random()} exact path="/auth/register">
+        <Route key={Math.random() * Math.random()} exact path="/auth/register">
           <RegisterPage />
         </Route>
-        <Route key={Math.random()} exact path="/auth/settings">
+        <Route key={Math.random() * Math.random()} exact path="/auth/settings">
           <SettingsPage />
         </Route>
-        <Route key={Math.random()} exact path="/auth/verify-email">
+        <Route key={Math.random() * Math.random()} exact path="/auth/verify-email">
           <VerifyEmailPage />
         </Route>
-        <Route key={Math.random()} exact path="/auth/reset-password">
+        <Route key={Math.random() * Math.random()} exact path="/auth/reset-password">
           <ResetPasswordPage />
         </Route>
-        <Route key={Math.random()} exact path="/auth/reset-password/2fa">
+        <Route key={Math.random() * Math.random()} exact path="/auth/reset-password/2fa">
           <ResetPassword2faPage />
         </Route>
-        <Route key={Math.random()} exact path="/auth/reset-password/verify-email">
+        <Route key={Math.random() * Math.random()} exact path="/auth/reset-password/verify-email">
           <ResetPasswordVerifyEmailPage />
         </Route>
-        <Route key={Math.random()} exact path="/auth/forgot-password">
+        <Route key={Math.random() * Math.random()} exact path="/auth/forgot-password">
           <ForgotPasswordPage />
         </Route>
-        <Route key={Math.random()} exact path="/auth/2fa">
+        <Route key={Math.random() * Math.random()} exact path="/auth/2fa">
           <TwoFactorVerify />
         </Route>
-        <Route key={Math.random()} exact path="/auth/2fa/setup">
+        <Route key={Math.random() * Math.random()} exact path="/auth/2fa/setup">
           <TwoFactorSetup />
         </Route>
-        <Route key={Math.random()} exact path="/auth/2fa/reset">
+        <Route key={Math.random() * Math.random()} exact path="/auth/2fa/reset">
           <TwoFactorReset />
         </Route>
       </IonRouterOutlet>
