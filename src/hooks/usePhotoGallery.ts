@@ -10,7 +10,7 @@ import {
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
 import { Capacitor, CapacitorHttp } from "@capacitor/core";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 
 export interface UserPhoto {
   filepath: string;
@@ -51,6 +51,7 @@ export function usePhotoGallery() {
                // url: "http://localhost:3752/api/images",
         data: imageJson,
         headers: {
+          "credentials": "include",
           "Content-Type": "application/json",
         },
       });

@@ -1,8 +1,10 @@
-import { api_url, tokenCookieName } from "@/lib/config";
+import { api_url, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import { TwoFactorSetUpForm } from "@/components/auth/TwoFactorSetUpForm";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
+import Copy2FACodeToClipboard from "@/components/auth/Copy2FACodeToClipboard";
 
 export default function Page() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -17,26 +19,32 @@ export default function Page() {
 
       try {
         // Check rate limit
-        const settings = await CapacitorHttp.request({
+        let token = null;
+        try {
+          token = await SecureStoragePlugin.get({ key: sessionName });
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+        const twoFactor = await CapacitorHttp.request({
           method: "GET",
           url: `${api_url}/api/auth/2fa/setup`,
           headers: {
             "Content-Type": "application/json",
+            "Authorization-Session": token?.value ?? "",
           },
         });
-        console.log(settings.data);
-        const settingsRes = await settings.data;
-        if (!settingsRes.success) {
-          if (settingsRes.redirect) history.push(settingsRes.redirect);
-          history.push('/');
-          return;
+        console.log(twoFactor.data);
+        const twoFactorRes = await twoFactor.data;
+        if (!twoFactorRes.success) {
+          if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
+          return history.push('/');
         }
 
         // Get data
 
-        setKeyURI(settingsRes.keyURI);
-        setEncodedTOTPKey(settingsRes.encodedTOTPKey);
-        setQRCode(settingsRes.qrCode);
+        setKeyURI(twoFactorRes.keyURI);
+        setEncodedTOTPKey(twoFactorRes.encodedTOTPKey);
+        setQRCode(twoFactorRes.qrCode);
 
         setLoading(false);
       } catch (error) {
@@ -62,6 +70,7 @@ export default function Page() {
           __html: qrCode,
         }}
       ></div>
+      <Copy2FACodeToClipboard code={keyURI.split("=")[3].split("&")[0]} />
       <TwoFactorSetUpForm encodedTOTPKey={encodedTOTPKey} />
     </>
   );

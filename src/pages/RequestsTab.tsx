@@ -7,9 +7,9 @@ import {
 } from "@ionic/react";
 import DendrologicRequests from "../components/DendrologicRequests";
 import { RouteComponentProps } from "react-router";
+import { Link } from "react-router-dom";
 
 const RequestsTab: React.FC<RouteComponentProps> = ({ match }) => {
-  console.log(match);
   return (
     <IonPage>
       <IonHeader>
@@ -17,6 +17,7 @@ const RequestsTab: React.FC<RouteComponentProps> = ({ match }) => {
           <IonTitle>
             Dendrologic requests
           </IonTitle>
+          <Link to="/auth/login">Login</Link>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

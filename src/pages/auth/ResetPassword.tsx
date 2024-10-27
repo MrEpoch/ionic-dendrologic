@@ -1,10 +1,11 @@
 import { PasswordResetForm } from "@/components/auth/PasswordResetForm";
-import { api_url, tokenCookieName } from "@/lib/config";
+import { api_url, passwordResetSessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 
-export default async function Page() {
+export default function Page() {
   const [loading, setLoading] = useState<boolean>(true);
   const history = useHistory();
 
@@ -12,20 +13,26 @@ export default async function Page() {
     async function fetchData() {
 
       try {
-        // Check rate limit
-        const settings = await CapacitorHttp.request({
+        let token = null;
+        try {
+          token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+
+        const resetPassword = await CapacitorHttp.request({
           method: "GET",
           url: `${api_url}/api/auth/reset-password`,
           headers: {
             "Content-Type": "application/json",
+            "Authorization-Password-Session": token?.value ?? "",
           },
         });
-        console.log(settings.data);
-        const settingsRes = await settings.data;
-        if (!settingsRes.success) {
-          if (settingsRes.redirect) history.push(settingsRes.redirect);
-          history.push('/');
-          return;
+        console.log(resetPassword.data);
+        const resetPasswordRes = await resetPassword.data;
+        if (!resetPasswordRes.success) {
+          if (resetPasswordRes.redirect) return history.push(resetPasswordRes.redirect);
+          return history.push('/');
         }
 
         // Get data

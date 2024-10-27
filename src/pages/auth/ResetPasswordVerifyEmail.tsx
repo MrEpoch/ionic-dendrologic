@@ -1,11 +1,12 @@
 import { PasswordResetEmailVerificationForm } from "@/components/auth/PasswordResetForm";
-import { api_url, tokenCookieName } from "@/lib/config";
+import { api_url, passwordResetSessionName } from "@/lib/config";
 import { PasswordResetSession } from "@/types";
 import { CapacitorHttp } from "@capacitor/core";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 
-export default async function Page() {
+export default function Page() {
   const [loading, setLoading] = useState<boolean>(true);
   const [session, setSession] = useState<PasswordResetSession | null>(null);
   const history = useHistory();
@@ -15,23 +16,29 @@ export default async function Page() {
 
       try {
         // Check rate limit
-        const settings = await CapacitorHttp.request({
+        let token = null;
+        try {
+          token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+        const resetPassword = await CapacitorHttp.request({
           method: "GET",
           url: `${api_url}/api/auth/reset-password/verify-email`,
           headers: {
             "Content-Type": "application/json",
+            "Authorization-Password-Session": token?.value ?? "",
           },
         });
-        console.log(settings.data);
-        const settingsRes = await settings.data;
-        if (!settingsRes.success) {
-          if (settingsRes.redirect) history.push(settingsRes.redirect);
-          history.push('/');
-          return;
+        console.log(resetPassword.data);
+        const resetPasswordRes = await resetPassword.data;
+        if (!resetPasswordRes.success) {
+          if (resetPasswordRes.redirect) return history.push(resetPasswordRes.redirect);
+          return history.push('/');
         }
 
         // Get data
-        setSession(settingsRes.session);
+        setSession(resetPasswordRes.session);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);

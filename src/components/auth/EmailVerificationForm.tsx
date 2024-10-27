@@ -1,7 +1,8 @@
-import { api_url } from "@/lib/config";
+import { api_url, emailName, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import React, { useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 
 export function EmailVerificationForm() {
   const [code, setCode] = useState("");
@@ -11,11 +12,21 @@ export function EmailVerificationForm() {
   async function onSubmit(e) {
     e.preventDefault();
     console.log("sending", code);
+    let token = null;
+    let emailRequestId = null;
+    try {
+      token = await SecureStoragePlugin.get({ key: sessionName });
+      emailRequestId = await SecureStoragePlugin.get({ key: emailName });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
     const response = await CapacitorHttp.request({
       method: "POST",
       url: `${api_url}/api/auth/verify-email`,
       headers: {
         "Content-Type": "application/json",
+        "Authorization-Session": token?.value ?? "",
+        "Authorization-Email": emailRequestId?.value ?? "",
       },
       data: JSON.stringify({
         code: code,
@@ -23,10 +34,17 @@ export function EmailVerificationForm() {
     });
 
     const data = await response.data;
-    if (data.redirect) {
-      history.push(data.redirect ? data.redirect : "/");
+    if (data.success) {
+      console.log(data);
+      if (data.emailRequestId) await SecureStoragePlugin.set({ key: emailName, value: data.emailRequestId });
+      if (data.redirect) return history.push(data.redirect);
+      return history.push("/auth/settings");
+    } else {
+      if (data.redirect) {
+        return history.push(data.redirect);
+      }
+      return history.push("/");
     }
-    history.push("/auth/settings");
   }
 
   return (
@@ -48,20 +66,36 @@ export function EmailVerificationForm() {
 export function ResendEmailVerificationForm() {
   const history = useHistory();
 
-  async function onSubmit() {
+  async function onSubmit(e) {
+    e.preventDefault();
+    let token = null;
+    let emailRequestId = null;
+    try {
+      token = await SecureStoragePlugin.get({ key: sessionName });
+      emailRequestId = await SecureStoragePlugin.get({ key: emailName });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
     const response = await CapacitorHttp.request({
       method: "POST",
       url: `${api_url}/api/auth/verify-email/resend`,
       headers: {
         "Content-Type": "application/json",
+        "Authorization-Session": token?.value ?? "",
+        "Authorization-Email": emailRequestId?.value ?? "",
       },
     });
 
     const data = await response.data;
-    if (data.redirect) {
-      history.push(data.redirect ? data.redirect : "/");
+    if (data.success) {
+      if (data.emailRequestId) await SecureStoragePlugin.set({ key: emailName, value: data.emailRequestId });
+      if (data.redirect) return history.push(data.redirect);
+    } else {
+      if (data.redirect) {
+        return history.push(data.redirect);
+      }
+      return history.push("/");
     }
-    if (data.success) history.push("/");
   }
 
   return (

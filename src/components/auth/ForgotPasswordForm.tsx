@@ -6,9 +6,10 @@ import { Form } from "../ui/form";
 import { CustomFieldEmail } from "./CustomField";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import { CapacitorHttp } from "@capacitor/core";
-import { api_url } from "@/lib/config";
+import { api_url, passwordResetSessionName } from "@/lib/config";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 
 export function ForgotPasswordForm() {
   const form = useForm<z.infer<typeof formSchemaEmail>>({
@@ -34,9 +35,12 @@ export function ForgotPasswordForm() {
 
       const emailResponse = await email.data;
       if (emailResponse.success) {
+        await SecureStoragePlugin.set({ key: passwordResetSessionName, value: emailResponse.sessionToken });
+        if (emailResponse.redirect) return history.push(emailResponse.redirect);
         console.log("Success", emailResponse);
-        history.push("/auth/reset-password/verify-email");
+        return history.push("/auth/reset-password/verify-email");
       }
+      if (emailResponse.redirect) return history.push(emailResponse.redirect);
     }
 
   return (

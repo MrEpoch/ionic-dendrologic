@@ -6,9 +6,10 @@ import { Form } from "../ui/form";
 import { CustomFieldPassword, CustomFieldCode } from "./CustomField";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import { CapacitorHttp } from "@capacitor/core";
-import { api_url, tokenCookieName } from "@/lib/config";
+import { api_url, passwordResetSessionName } from "@/lib/config";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 
 export function PasswordResetForm() {
   const history = useHistory();
@@ -22,11 +23,18 @@ export function PasswordResetForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchemaPassword>) {
+      let token = null;
+      try {
+        token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
       const password = await CapacitorHttp.request({
         method: "POST",
         url: `${api_url}/api/auth/reset-password`,
         headers: {
           "Content-Type": "application/json",
+          "Authorization-Password-Session": token?.value ?? "",
         },
         data: JSON.stringify({
           password: values.password,
@@ -35,10 +43,10 @@ export function PasswordResetForm() {
       });
 
       const passwordResponse = await password.data;
-      if (passwordResponse.redirect) history.push(passwordResponse.redirect); {
+      if (passwordResponse.redirect) return history.push(passwordResponse.redirect); {
       if (passwordResponse.success) {
         console.log("Success", passwordResponse);
-        history.push("/auth/settings");
+        return history.push("/auth/settings");
       }
     }
   }
@@ -89,21 +97,28 @@ export function PasswordResetTOTPForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
       console.log(values);
+      let token = null;
+      try {
+        token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
       const password = await CapacitorHttp.request({
         method: "POST",
         url: `${api_url}/api/auth/reset-password/2fa/totp-reset`,
         headers: {
           "Content-Type": "application/json",
+          "Authorization-Password-Session": token?.value ?? "",
         },
         data: JSON.stringify({
           code: values.code
         }),
       });
       const twoFactorRes = await password.data;
-      if (twoFactorRes.redirect) history.push(twoFactorRes.redirect); {
+      if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect); {
       if (twoFactorRes.success) {
         console.log("Success", twoFactorRes);
-        history.push("/auth/reset-password");
+        return history.push("/auth/reset-password");
       }
     }
   }
@@ -137,21 +152,28 @@ export function PasswordResetRecoveryCodeForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
       console.log(values);
+      let token = null;
+      try {
+        token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
       const password = await CapacitorHttp.request({
         method: "POST",
         url: `${api_url}/api/auth/reset-password/2fa/2fa-with-recovery-code`,
         headers: {
           "Content-Type": "application/json",
+          "Authorization-Password-Session": token?.value ?? "",
         },
         data: JSON.stringify({
           code: values.code
         }),
       });
       const twoFactorRes = await password.data;
-      if (twoFactorRes.redirect) history.push(twoFactorRes.redirect); {
+      if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect); {
       if (twoFactorRes.success) {
         console.log("Success", twoFactorRes);
-        history.push("/auth/reset-password");
+        return history.push("/auth/reset-password");
       }
     }
   }
@@ -185,11 +207,18 @@ export function PasswordResetEmailVerificationForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
     console.log(values);
+      let token = null;
+      try {
+        token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
       const password = await CapacitorHttp.request({
         method: "POST",
         url: `${api_url}/api/auth/reset-password/verify-email`,
         headers: {
           "Content-Type": "application/json",
+          "Authorization-Password-Session": token?.value ?? "",
         },
         data: JSON.stringify({
           code: values.code
@@ -197,10 +226,10 @@ export function PasswordResetEmailVerificationForm() {
       });
       const twoFactorRes = await password.data;
       console.log(twoFactorRes);
-      if (twoFactorRes.redirect) history.push(twoFactorRes.redirect); {
+      if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect); {
       if (twoFactorRes.success) {
         console.log("Success", twoFactorRes);
-        history.push("/auth/reset-password");
+        return history.push("/auth/reset-password");
       }
     }
   }

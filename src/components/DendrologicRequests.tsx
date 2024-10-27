@@ -1,8 +1,8 @@
 import { CapacitorHttp } from "@capacitor/core";
 import requests from "../temp.json";
-import { IonItem, IonLabel, IonList } from "@ionic/react";
+import { IonItem, IonList } from "@ionic/react";
 import { useEffect } from "react";
-import { RouteComponentProps, useHistory } from "react-router";
+import { RouteComponentProps, useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 interface ContainerProps {

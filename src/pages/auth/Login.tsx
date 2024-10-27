@@ -1,9 +1,12 @@
+import { IonContent, IonHeader, IonInput, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { AuthForm } from "../../components/auth/AuthForm";
 
 export default function Page() {
   return (
-    <div>
-      <AuthForm />
-    </div>
+    <IonPage>
+      <IonContent fullscreen>
+        <AuthForm />
+      </IonContent>
+    </IonPage>
   );
 }

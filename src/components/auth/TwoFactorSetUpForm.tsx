@@ -7,9 +7,10 @@ import { Form } from "../ui/form";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { z } from "zod";
-import { useHistory } from "react-router";
-import { api_url, tokenCookieName } from "@/lib/config";
+import { Link, useHistory } from "react-router-dom";
+import { api_url, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 
 export function TwoFactorSetUpForm({ encodedTOTPKey }) {
   const [recoveryCode, setRecoveryCode] = useState("");
@@ -22,11 +23,18 @@ export function TwoFactorSetUpForm({ encodedTOTPKey }) {
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
     console.log(values);
+    let token = null;
+    try {
+      token = await SecureStoragePlugin.get({ key: sessionName });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
     const twoFactor = await CapacitorHttp.request({
       method: "POST",
       url: `${api_url}/api/auth/2fa/setup`,
       headers: {
         "Content-Type": "application/json",
+        "Authorization-Session": token?.value ?? "",
       },
       data: JSON.stringify({
         code: values.code,
@@ -55,7 +63,12 @@ export function TwoFactorSetUpForm({ encodedTOTPKey }) {
         />
         <Button type="submit">Submit</Button>
       </form>
-      {recoveryCode && <p>Recovery code: {recoveryCode}</p>}
+    {recoveryCode && 
+      <>
+        <p>Recovery code: {recoveryCode}</p>
+        <Link to="/auth/settings">Next</Link>
+      </>
+    }
     </Form>
   );
 }
@@ -72,11 +85,18 @@ export function TwoFactorVerificationForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
     console.log(values);
+    let token = null;
+    try {
+      token = await SecureStoragePlugin.get({ key: sessionName });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
     const twoFactor = await CapacitorHttp.request({
       method: "POST",
       url: `${api_url}/api/auth/2fa`,
       headers: {
         "Content-Type": "application/json",
+        "Authorization-Session": token?.value ?? "",
       },
       data: JSON.stringify({
         code: values.code
@@ -84,7 +104,7 @@ export function TwoFactorVerificationForm() {
     });
     const twoFactorRes = await twoFactor.data;
     if (twoFactorRes.success) {
-      history.push("/");
+      return history.push("/");
     }
   }
 
@@ -117,11 +137,18 @@ export function TwoFactorResetForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
     console.log(values);
+    let token = null;
+    try {
+      token = await SecureStoragePlugin.get({ key: sessionName });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
     const twoFactor = await CapacitorHttp.request({
       method: "POST",
       url: `${api_url}/api/auth/2fa/reset`,
       headers: {
         "Content-Type": "application/json",
+        "Authorization-Session": token?.value ?? "",
       },
       data: JSON.stringify({
         code: values.code
@@ -129,7 +156,7 @@ export function TwoFactorResetForm() {
     });
     const twoFactorRes = await twoFactor.data;
     if (twoFactorRes.success) {
-      history.push("/auth/2fa/setup");
+      return history.push("/auth/2fa/setup");
     }
   }
 

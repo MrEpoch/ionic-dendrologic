@@ -7,7 +7,7 @@ import {
   IonTabs,
 } from "@ionic/react";
 import { ellipse, square, triangle } from "ionicons/icons";
-import { Redirect, Route } from "react-router";
+import { Route } from "react-router";
 
 export default function GeoTabs() {
   return (

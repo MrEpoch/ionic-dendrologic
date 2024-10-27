@@ -1,8 +1,10 @@
 import { PasswordResetRecoveryCodeForm, PasswordResetTOTPForm } from "@/components/auth/PasswordResetForm";
-import { api_url, tokenCookieName } from "@/lib/config";
+import { TwoFactorVerificationForm } from "@/components/auth/TwoFactorSetUpForm";
+import { api_url, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { Link, useHistory } from "react-router-dom";
 
 export default function Page() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -13,19 +15,25 @@ export default function Page() {
 
       try {
         // Check rate limit
-        const settings = await CapacitorHttp.request({
+        let token = null;
+        try {
+          token = await SecureStoragePlugin.get({ key: sessionName });
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+        const twoFactor = await CapacitorHttp.request({
           method: "GET",
           url: `${api_url}/api/auth/2fa`,
           headers: {
             "Content-Type": "application/json",
+            "Authorization-Session": token?.value ?? "",
           },
         });
-        console.log(settings.data);
-        const settingsRes = await settings.data;
-        if (!settingsRes.success) {
-          if (settingsRes.redirect) history.push(settingsRes.redirect);
-          history.push('/');
-          return;
+        console.log(twoFactor.data);
+        const twoFactorRes = await twoFactor.data;
+        if (!twoFactorRes.success) {
+          if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
+          return history.push('/');
         }
 
         // Get data
@@ -45,11 +53,8 @@ export default function Page() {
 		<>
 			<h1>Two-factor authentication</h1>
 			<p>Enter the code from your authenticator app.</p>
-			<PasswordResetTOTPForm />
-			<section>
-				<h2>Use your recovery code instead</h2>
-				<PasswordResetRecoveryCodeForm />
-			</section>
+			<TwoFactorVerificationForm />
+      <Link to="/auth/2fa/reset">Use recovery code</Link>
 		</>
 	);
 }

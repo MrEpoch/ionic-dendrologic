@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomField from "./CustomField";
-import { useHistory } from "react-router";
-import { api_url } from "@/lib/config";
+import { useHistory } from "react-router-dom";
+import { api_url, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 export const formSchema = z
   .object({
@@ -68,12 +69,15 @@ export function AuthForm({
       console.log(user.data);
 
       const userResponse = await user.data;
-
-      if (userResponse.redirect) history.push(userResponse.redirect);
-
       if (userResponse.success) {
+        await SecureStoragePlugin.set({ key: sessionName, value: userResponse.sessionToken });
         console.log("Success", userResponse);
-        history.push("/auth/2fa/setup");
+        if (userResponse.redirect) return history.push(userResponse.redirect);
+        return history.push("/auth/2fa/setup");
+      } else {
+        console.log(userResponse.error);
+        if (userResponse.redirect) return history.push(userResponse.redirect);
+        return history.push("/auth/register");
       }
     } else {
       const user = await CapacitorHttp.request({
@@ -88,9 +92,18 @@ export function AuthForm({
         })
       });
       const userResponse = await user.data;
-      if (userResponse.redirect) history.push(userResponse.redirect);
       if (userResponse.success) {
+        console.log(sessionName, userResponse);
+        await SecureStoragePlugin.set({ key: sessionName, value: userResponse.sessionToken });
         console.log("Success", userResponse);
+        if (userResponse.redirect) return history.push(userResponse.redirect);
+        return history.push("/auth/2fa");
+      } else {
+        console.log(userResponse.redirect);
+        if (userResponse.redirect) {
+          return history.push(userResponse.redirect);
+        }
+        return history.push("/auth/login");
       }
     }
   }
