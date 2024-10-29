@@ -34,7 +34,10 @@ export function ForgotPasswordForm() {
       });
 
       const emailResponse = await email.data;
+      if (emailResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
       if (emailResponse.success) {
+        const keys = await SecureStoragePlugin.keys();
+        keys.value.includes(passwordResetSessionName) && await SecureStoragePlugin.remove({ key: passwordResetSessionName });
         await SecureStoragePlugin.set({ key: passwordResetSessionName, value: emailResponse.sessionToken });
         if (emailResponse.redirect) return history.push(emailResponse.redirect);
         console.log("Success", emailResponse);

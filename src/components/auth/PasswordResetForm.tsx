@@ -8,12 +8,11 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useHistory } from "react-router-dom";
 import { CapacitorHttp } from "@capacitor/core";
-import { api_url, passwordResetSessionName } from "@/lib/config";
+import { api_url, passwordResetSessionName, sessionName } from "@/lib/config";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 
 export function PasswordResetForm() {
   const history = useHistory();
-
   const form = useForm<z.infer<typeof formSchemaPassword>>({
     resolver: zodResolver(formSchemaPassword),
     defaultValues: {
@@ -23,32 +22,38 @@ export function PasswordResetForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchemaPassword>) {
-      let token = null;
-      try {
-        token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      const password = await CapacitorHttp.request({
-        method: "POST",
-        url: `${api_url}/api/auth/reset-password`,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization-Password-Session": token?.value ?? "",
-        },
-        data: JSON.stringify({
-          password: values.password,
-          newPassword: values.newPassword,
-        })
-      });
-
-      const passwordResponse = await password.data;
-      if (passwordResponse.redirect) return history.push(passwordResponse.redirect); {
-      if (passwordResponse.success) {
-        console.log("Success", passwordResponse);
-        return history.push("/auth/settings");
-      }
+    let token = null;
+    try {
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
+    const password = await CapacitorHttp.request({
+      method: "POST",
+      url: `${api_url}/api/auth/reset-password`,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization-Password-Session": token?.value ?? "",
+      },
+      data: JSON.stringify({
+        password: values.password,
+        newPassword: values.newPassword,
+      })
+    });
+
+    const passwordResponse = await password.data;
+    if (passwordResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+    if (passwordResponse.success) {
+      console.log("Success", passwordResponse);
+      const keys = await SecureStoragePlugin.keys();
+      keys.value.includes(passwordResetSessionName) && await SecureStoragePlugin.remove({ key: passwordResetSessionName });
+      keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
+      await SecureStoragePlugin.set({ key: sessionName, value: passwordResponse.sessionToken });
+      if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
+      return history.push("/auth/settings");
+    }
+    if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
   }
 
   return (
@@ -99,7 +104,8 @@ export function PasswordResetTOTPForm() {
       console.log(values);
       let token = null;
       try {
-        token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+        const keys = await SecureStoragePlugin.keys();
+        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -115,6 +121,7 @@ export function PasswordResetTOTPForm() {
         }),
       });
       const twoFactorRes = await password.data;
+      if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
       if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect); {
       if (twoFactorRes.success) {
         console.log("Success", twoFactorRes);
@@ -154,7 +161,8 @@ export function PasswordResetRecoveryCodeForm() {
       console.log(values);
       let token = null;
       try {
-        token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+        const keys = await SecureStoragePlugin.keys();
+        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -170,6 +178,7 @@ export function PasswordResetRecoveryCodeForm() {
         }),
       });
       const twoFactorRes = await password.data;
+      if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
       if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect); {
       if (twoFactorRes.success) {
         console.log("Success", twoFactorRes);
@@ -209,7 +218,8 @@ export function PasswordResetEmailVerificationForm() {
     console.log(values);
       let token = null;
       try {
-        token = await SecureStoragePlugin.get({ key: passwordResetSessionName });
+        const keys = await SecureStoragePlugin.keys();
+        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -226,12 +236,12 @@ export function PasswordResetEmailVerificationForm() {
       });
       const twoFactorRes = await password.data;
       console.log(twoFactorRes);
-      if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect); {
+      if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+      if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
       if (twoFactorRes.success) {
         console.log("Success", twoFactorRes);
         return history.push("/auth/reset-password");
       }
-    }
   }
 
   return (

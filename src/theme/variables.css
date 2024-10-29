@@ -14,70 +14,71 @@ http://ionicframework.com/docs/theming/ */
     --ion-color-primary-shade: #005a00; /* A darker shade of the primary color */
     --ion-color-primary-tint: #1a751a; /* A lighter tint of the primary color */
 
-
     --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    --foreground: 144 78% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 144 40% 94%;
+    --muted-foreground: 144 78% 35%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 144 78% 20%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 144 20% 85%;
+    --input: 144 20% 85%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 144 78% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 144 78% 37%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 144 30% 90%;
+    --secondary-foreground: 144 78% 20%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 144 40% 96%;
+    --accent-foreground: 144 78% 20%;
 
     --destructive: 0 100% 50%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 215 20.2% 65.1%;
+    --ring: 144 20% 80%;
 
-    --radius: 0.5rem;
+    --radius: 0.3rem;
   }
 
-  .dark {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 144 60% 6%;
+      --foreground: 144 78% 90%;
 
-    --muted: 223 47% 11%;
-    --muted-foreground: 215.4 16.3% 56.9%;
+      --muted: 144 50% 10%;
+      --muted-foreground: 144 78% 80%;
 
-    --accent: 216 34% 17%;
-    --accent-foreground: 210 40% 98%;
+      --popover: 144 60% 6%;
+      --popover-foreground: 144 78% 90%;
 
-    --popover: 224 71% 4%;
-    --popover-foreground: 215 20.2% 65.1%;
+      --border: 144 50% 15%;
+      --input: 144 50% 15%;
 
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
+      --card: 144 60% 6%;
+      --card-foreground: 144 78% 90%;
 
-    --card: 224 71% 4%;
-    --card-foreground: 213 31% 91%;
+      --primary: 144 78% 37%;
+      --primary-foreground: 0 0% 100%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 1.2%;
+      --secondary: 144 30% 20%;
+      --secondary-foreground: 144 78% 90%;
 
-    --secondary: 222.2 47.4% 11.2%;
-    --secondary-foreground: 210 40% 98%;
+      --accent: 144 50% 15%;
+      --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+      --destructive: 0 63% 31%;
+      --destructive-foreground: 0 0% 100%;
 
-    --ring: 216 34% 17%;
+      --ring: 144 50% 15%;
 
-    --radius: 0.5rem;
+      --radius: 0.3rem;
+    }
   }
 }
 

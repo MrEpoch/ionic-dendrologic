@@ -3,9 +3,14 @@ import { CapacitorHttp } from "@capacitor/core";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
+import { Button } from "../ui/button";
 
 export function EmailVerificationForm() {
   const [code, setCode] = useState("");
+  const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const history = useHistory();
 
@@ -15,11 +20,13 @@ export function EmailVerificationForm() {
     let token = null;
     let emailRequestId = null;
     try {
-      token = await SecureStoragePlugin.get({ key: sessionName });
-      emailRequestId = await SecureStoragePlugin.get({ key: emailName });
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+      emailRequestId = keys.value.includes(emailName) ? await SecureStoragePlugin.get({ key: emailName }) : null;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+    console.log(token, emailRequestId);
     const response = await CapacitorHttp.request({
       method: "POST",
       url: `${api_url}/api/auth/verify-email`,
@@ -34,31 +41,47 @@ export function EmailVerificationForm() {
     });
 
     const data = await response.data;
+
+    if (data?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+    if (data?.error === "EXPIRED_CODE") {
+      await SecureStoragePlugin.set({ key: emailName, value: data.emailRequestId });
+      console.log("expired");
+      setMessage("Code is expired, we send another one.");
+      return;
+    }
     if (data.success) {
       console.log(data);
-      if (data.emailRequestId) await SecureStoragePlugin.set({ key: emailName, value: data.emailRequestId });
+      const keys = await SecureStoragePlugin.keys();
+      keys.value.includes(emailName) && await SecureStoragePlugin.remove({ key: emailName });
       if (data.redirect) return history.push(data.redirect);
-      return history.push("/auth/settings");
+      return history.push("/auth/2fa");
     } else {
       if (data.redirect) {
         return history.push(data.redirect);
       }
-      return history.push("/");
     }
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form className="space-y-2 items-center flex w-full flex-col" onSubmit={onSubmit}>
       <label htmlFor="form-verify.code">Email code</label>
-      <input
-        id="form-verify.code"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        name="code"
-        required
-      />
+      <InputOTP id="form-verify.code" required pattern={REGEXP_ONLY_DIGITS_AND_CHARS} maxLength={8} value={code} onChange={(value) => setCode(value)}>
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+          <InputOTPSlot index={2} />
+          <InputOTPSlot index={3} />
+          <InputOTPSlot index={4} />
+          <InputOTPSlot index={5} />
+          <InputOTPSlot index={6} />
+          <InputOTPSlot index={7} />
+        </InputOTPGroup>
+      </InputOTP> 
       <br />
-      <button>Verify</button>
+      <div className="flex gap-2">
+        <Button className="w-fit self-center">Verify</Button>
+      </div>
+      <p className="text-red-500">{message}</p>
     </form>
   );
 }
@@ -71,8 +94,9 @@ export function ResendEmailVerificationForm() {
     let token = null;
     let emailRequestId = null;
     try {
-      token = await SecureStoragePlugin.get({ key: sessionName });
-      emailRequestId = await SecureStoragePlugin.get({ key: emailName });
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+      emailRequestId = keys.value.includes(emailName) ? await SecureStoragePlugin.get({ key: emailName }) : null;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -87,8 +111,13 @@ export function ResendEmailVerificationForm() {
     });
 
     const data = await response.data;
+    if (data?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
     if (data.success) {
-      if (data.emailRequestId) await SecureStoragePlugin.set({ key: emailName, value: data.emailRequestId });
+      if (data.emailRequestId) {
+        const keys = await SecureStoragePlugin.keys();
+        keys.value.includes(emailName) && await SecureStoragePlugin.remove({ key: emailName });
+        await SecureStoragePlugin.set({ key: emailName, value: data.emailRequestId });
+      }
       if (data.redirect) return history.push(data.redirect);
     } else {
       if (data.redirect) {
@@ -99,8 +128,8 @@ export function ResendEmailVerificationForm() {
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <button>Resend code</button>
+    <form className="" onSubmit={onSubmit}>
+      <Button className="w-fit self-start" variant={"secondary"}>Resend code</Button>
     </form>
   );
 }

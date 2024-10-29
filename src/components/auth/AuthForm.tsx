@@ -6,9 +6,10 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomField from "./CustomField";
 import { useHistory } from "react-router-dom";
-import { api_url, sessionName } from "@/lib/config";
+import { api_url, emailName, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
+import { errorHandler } from "@/lib/utils";
 
 export const formSchema = z
   .object({
@@ -70,12 +71,14 @@ export function AuthForm({
 
       const userResponse = await user.data;
       if (userResponse.success) {
+        const keys = await SecureStoragePlugin.keys();
+        keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
         await SecureStoragePlugin.set({ key: sessionName, value: userResponse.sessionToken });
-        console.log("Success", userResponse);
+        await SecureStoragePlugin.set({ key: emailName, value: userResponse.emailRequestId });
         if (userResponse.redirect) return history.push(userResponse.redirect);
         return history.push("/auth/2fa/setup");
       } else {
-        console.log(userResponse.error);
+        if (userResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
         if (userResponse.redirect) return history.push(userResponse.redirect);
         return history.push("/auth/register");
       }
@@ -93,13 +96,28 @@ export function AuthForm({
       });
       const userResponse = await user.data;
       if (userResponse.success) {
-        console.log(sessionName, userResponse);
+
+        // Checks if session exists, otherwise delates it
+
+        const keys = await SecureStoragePlugin.keys();
+        keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
+
+        // Adds new session
+
         await SecureStoragePlugin.set({ key: sessionName, value: userResponse.sessionToken });
-        console.log("Success", userResponse);
+
+        // Redirects if possible
+        
         if (userResponse.redirect) return history.push(userResponse.redirect);
+
+        // In worst case will user need to handle two factor auth
+
         return history.push("/auth/2fa");
       } else {
-        console.log(userResponse.redirect);
+
+        // Error handler
+
+        if (userResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
         if (userResponse.redirect) {
           return history.push(userResponse.redirect);
         }

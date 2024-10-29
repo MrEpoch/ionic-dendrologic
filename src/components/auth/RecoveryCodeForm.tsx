@@ -11,7 +11,8 @@ export function RecoveryCodeForm({ recoveryCode }) {
     e.preventDefault();
     let token = null;
     try {
-      token = await SecureStoragePlugin.get({ key: sessionName });
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -25,6 +26,7 @@ export function RecoveryCodeForm({ recoveryCode }) {
       data: JSON.stringify({}),
     });
     const codeResponse = await recoveryCodeApi.data;
+    if (codeResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
     if (codeResponse.success && codeResponse.recoveryCode) {
       console.log("Success", codeResponse);
       setRecoveryCodeState(codeResponse.recoveryCode);

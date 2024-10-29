@@ -1,6 +1,6 @@
 import { RecoveryCodeForm } from "@/components/auth/RecoveryCodeForm";
 import { EmailUpdateForm, PasswordUpdateForm } from "@/components/auth/UpdateForm";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { User } from "@/types";
 import { CapacitorHttp } from "@capacitor/core";
@@ -12,13 +12,15 @@ export default function Page() {
   const [user, setUser] = useState<User | null>(null);
   const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
   const history = useHistory();
+  const loadingData = useRef(false);
 
-  const fetchData = useCallback(async () =>{
+  const fetchData = (async () =>{
       try {
         // Check rate limit
         let token = null;
         try {
-          token = await SecureStoragePlugin.get({ key: sessionName });
+          const keys = await SecureStoragePlugin.keys();
+          token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -33,6 +35,7 @@ export default function Page() {
         console.log(settings.data);
         const settingsRes = await settings.data;
         if (!settingsRes.success) {
+          if (settingsRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
           if (settingsRes.redirect) return history.push(settingsRes.redirect);
           return history.push('/');
         }
@@ -46,16 +49,19 @@ export default function Page() {
         console.error('Error fetching data:', error);
         setLoading(false);
       }
-  }, [history]);
+  });
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!loadingData.current) {
+      loadingData.current = true;
+      fetchData();
+    }
+  }, [history]);
 
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background items-center h-full w-full">
 			<header>
 				<Link to="/">Home</Link>
         <Link to="/auth/settings">Settings</Link>

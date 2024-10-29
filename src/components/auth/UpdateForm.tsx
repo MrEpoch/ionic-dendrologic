@@ -39,7 +39,8 @@ export function PasswordUpdateForm() {
     console.log(values);
       let token = null;
       try {
-        token = await SecureStoragePlugin.get({ key: sessionName });
+        const keys = await SecureStoragePlugin.keys();
+        token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -56,11 +57,16 @@ export function PasswordUpdateForm() {
         }),
       });
       const passwordResponse = await password.data;
-      if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
+      if (passwordResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
       if (passwordResponse.success) {
+        const keys = await SecureStoragePlugin.keys();
+        keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
+        await SecureStoragePlugin.set({ key: sessionName, value: passwordResponse.sessionToken });
+        if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
         console.log("Success", passwordResponse);
         return history.push("/auth/settings");
       }
+      if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
     }
 
   return (
@@ -101,7 +107,8 @@ export function EmailUpdateForm() {
     console.log(values);
       let token = null;
       try {
-        token = await SecureStoragePlugin.get({ key: sessionName });
+        const keys = await SecureStoragePlugin.keys();
+        token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -117,8 +124,11 @@ export function EmailUpdateForm() {
         }),
       });
       const emailResponse = await email.data;
+    if (emailResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
       if (emailResponse.success) {
         console.log("Success", emailResponse);
+        const keys = await SecureStoragePlugin.keys();
+        keys.value.includes(emailName) && await SecureStoragePlugin.remove({ key: emailName });
         await SecureStoragePlugin.set({ key: emailName, value: emailResponse.emailVerificationRequestId });
         if (emailResponse.redirect) return history.push(emailResponse.redirect);
         return history.push("/auth/settings");

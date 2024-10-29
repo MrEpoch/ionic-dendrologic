@@ -25,7 +25,8 @@ export function TwoFactorSetUpForm({ encodedTOTPKey }) {
     console.log(values);
     let token = null;
     try {
-      token = await SecureStoragePlugin.get({ key: sessionName });
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -43,6 +44,7 @@ export function TwoFactorSetUpForm({ encodedTOTPKey }) {
     });
 
     const twoFactorRes = await twoFactor.data;
+    if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
     console.log(twoFactorRes);
     if (twoFactorRes.success) {
       console.log("Success", twoFactorRes);
@@ -87,7 +89,8 @@ export function TwoFactorVerificationForm() {
     console.log(values);
     let token = null;
     try {
-      token = await SecureStoragePlugin.get({ key: sessionName });
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -103,6 +106,7 @@ export function TwoFactorVerificationForm() {
       }),
     });
     const twoFactorRes = await twoFactor.data;
+    if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
     if (twoFactorRes.success) {
       return history.push("/");
     }
@@ -139,7 +143,8 @@ export function TwoFactorResetForm() {
     console.log(values);
     let token = null;
     try {
-      token = await SecureStoragePlugin.get({ key: sessionName });
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -155,6 +160,7 @@ export function TwoFactorResetForm() {
       }),
     });
     const twoFactorRes = await twoFactor.data;
+    if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
     if (twoFactorRes.success) {
       return history.push("/auth/2fa/setup");
     }

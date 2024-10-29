@@ -1,7 +1,6 @@
 import {
   IonBackButton,
   IonButtons,
-  IonContent,
   IonHeader,
   IonPage,
   IonToolbar,
@@ -19,9 +18,9 @@ const DendrologicDetailPage: React.FC<RouteComponentProps> = (routeProps) => {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
+      <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background items-center h-full w-full">
         <DendrologicRequestDetail {...routeProps} />
-      </IonContent>
+      </div>
     </IonPage>
   );
 };

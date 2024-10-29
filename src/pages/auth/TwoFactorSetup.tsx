@@ -1,6 +1,6 @@
 import { api_url, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { TwoFactorSetUpForm } from "@/components/auth/TwoFactorSetUpForm";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
@@ -12,12 +12,14 @@ export default function Page() {
   const [keyURI, setKeyURI] = useState<string>("");
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [encodedTOTPKey, setEncodedTOTPKey] = useState<string>("");
+  const loadingData = useRef(false);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     try {
         let token = null;
         try {
-          token = await SecureStoragePlugin.get({ key: sessionName });
+          const keys = await SecureStoragePlugin.keys();
+          token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -32,6 +34,7 @@ export default function Page() {
         console.log(twoFactor.data);
         const twoFactorRes = await twoFactor.data;
         if (!twoFactorRes.success) {
+          if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
           if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
           return history.push('/');
         }
@@ -47,16 +50,19 @@ export default function Page() {
         console.error('Error fetching data:', error);
         setLoading(false);
       }
-    }, [history]);
+    };
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!loadingData.current) {
+      loadingData.current = true;
+      fetchData();
+    }
+  }, []);
 
   if (loading) return <div>Loading...</div>;
 
   return (
-    <>
+    <div className="flex flex-col justify-center dark:bg-background bg-background items-center h-full w-full">
       <h1>Set up two-factor authentication</h1>
       <div
         style={{
@@ -69,6 +75,6 @@ export default function Page() {
       ></div>
       <Copy2FACodeToClipboard code={keyURI.split("=")[3].split("&")[0]} />
       <TwoFactorSetUpForm encodedTOTPKey={encodedTOTPKey} />
-    </>
+    </div>
   );
 }
