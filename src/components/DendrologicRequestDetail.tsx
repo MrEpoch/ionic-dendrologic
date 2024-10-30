@@ -1,37 +1,70 @@
-import { RouteComponentProps } from "react-router";
+import { RouteComponentProps, useHistory } from "react-router";
 import { z } from "zod";
-import requests from "../temp.json";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import GeoLocationComponent from "./Geolocation";
 import DendrologicInfoModal from "./DendrologicInfoModal";
+import { CapacitorHttp } from "@capacitor/core";
+import { api_url } from "@/lib/config";
 
 const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
   match,
-  history,
 }) => {
-  const zodValidateId = z.string().uuid();
-  const [data, setData] = useState<any | null>(null);
-  const [selectedData, setSelectedData] = useState<any | null>(null);
-  const [mapShown, setMapShown] = useState(false);
+  const zodValidateId = z.string().length(36);
 
   function updateShown() {
     setMapShown(!mapShown);
   }
 
-  useMemo(() => {
-    const validateId = zodValidateId.safeParse(match?.params.id);
-    if (!validateId.success) {
-      history.replace("/tab1");
-    }
+  const history = useHistory();
+  const [loading, setLoading] = useState(true);
+  const loadingData = useRef(false);
+  const [data, setData] = useState<null | any>(null);
+  const [mapShown, setMapShown] = useState(false);
 
-    setData(
-      requests.georequests.find((request) => request.id === validateId?.data),
-    );
+  const fetchData = (async () =>{
+      try {
+        // Check rate limit
+        const validateId = zodValidateId.safeParse(match?.params?.id);
+        if (!validateId.success) {
+          return history.push("/main/requests");
+        }
+
+        console.log("fetch");
+        const geoData = await CapacitorHttp.request({
+          method: "GET",
+          url: `${api_url}/api/geo-requests/${validateId.data}`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const geoDataRes = await geoData.data;
+        console.log(geoDataRes);
+        if (!geoDataRes.success) {
+          if (geoDataRes.redirect) return history.push(geoDataRes.redirect);
+          return history.push('/');
+        }
+
+        // Get data
+        setData(geoDataRes.geoRequests);
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+  });
+
+  useEffect(() => {
+    if (!loadingData.current) {
+      console.log("run");
+      loadingData.current = true;
+      fetchData();
+    }
   }, []);
 
-  useMemo(() => {
-    console.log(data);
-  }, [data]);
+  if (loading) return <div>Loading...</div>;
+
 
   return (
     <>
@@ -45,7 +78,6 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
     */}
       <GeoLocationComponent
         updateShown={updateShown}
-        selectData={setSelectedData}
         shown={mapShown}
         location={data?.location}
         geoJSONdata={data?.geojson}

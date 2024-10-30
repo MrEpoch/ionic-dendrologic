@@ -1,4 +1,4 @@
-import { Redirect, Route, RouteComponentProps } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
@@ -31,7 +31,7 @@ import "@ionic/react/css/palettes/dark.system.css";
 
 /* Theme variables */
 import "./theme/variables.css";
-import DendrologicRequestDetailPage from "./pages/DendrologicDetailPage";
+import DendRequestPage from "./pages/dendrologic/RequestPage";
 import MainTabs from "./components/navigation/MainTabs";
 import GeoTabs from "./components/navigation/GeoTabs";
 import AuthRouting from "./components/navigation/AuthRouting";
@@ -49,7 +49,7 @@ const App: React.FC = () => (
         <Route path="/map-requests" component={GeoTabs} />
         <Route
           path={"/map-request/:id"}
-          component={DendrologicRequestDetailPage}
+          component={DendRequestPage}
         />
         <Route path={"/auth"} component={AuthRouting} />
       </IonRouterOutlet>

@@ -9,7 +9,7 @@ import {
 import React from "react";
 import { ellipse, square, triangle } from "ionicons/icons";
 import { Route } from "react-router";
-import RequestsTab from "../../pages/RequestsTab";
+import RequestsTab from "@/pages/dendrologic/RequestsTab";
 
 export default function MainTabs() {
   return (

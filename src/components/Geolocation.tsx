@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./Geolocation.css";
 import {
   GeoJSON,
@@ -30,7 +30,6 @@ function AnimatedPanningElement() {
 export default function GeoLocationComponent({
   geoJSONdata,
   updateShown,
-  selectData,
   location,
 }) {
   const [coordinates, setCoordinates] = useState<Position | null>(null);
@@ -136,7 +135,7 @@ export default function GeoLocationComponent({
         <MapContainer
           className="map-container"
           zoom={13}
-          center={[location[0], location[1]]}
+          center={[location.x, location.y]}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -148,7 +147,6 @@ export default function GeoLocationComponent({
               eventHandlers={{
                 click: (geo: unknown) => {
                   console.log(geo);
-                  selectData(geo.layer.feature.properties);
                   updateShown();
                 },
               }}

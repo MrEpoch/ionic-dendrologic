@@ -6,7 +6,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { RouteComponentProps } from "react-router";
-import DendrologicRequestDetail from "../components/DendrologicRequestDetail";
+import DendrologicRequestDetail from "@/components/DendrologicRequestDetail";
 
 const DendrologicDetailPage: React.FC<RouteComponentProps> = (routeProps) => {
   return (

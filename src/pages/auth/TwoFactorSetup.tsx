@@ -57,6 +57,10 @@ export default function Page() {
       loadingData.current = true;
       fetchData();
     }
+
+    return () => {
+      loadingData.current = false;
+    };
   }, []);
 
   if (loading) return <div>Loading...</div>;
