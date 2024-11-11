@@ -20,6 +20,13 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
   const loadingData = useRef(false);
   const [data, setData] = useState<null | any>(null);
   const [mapShown, setMapShown] = useState(false);
+  const [selected, setSelected] = useState<null | any>(null);
+
+
+  function selectFeature(feature) {
+    setSelected(feature);
+    updateShown();
+  }
 
   const fetchData = (async () =>{
       try {
@@ -79,10 +86,11 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
       <GeoLocationComponent
         updateShown={updateShown}
         shown={mapShown}
+        selectFeature={selectFeature}
         location={data?.location}
         geoJSONdata={data?.geojson}
       />
-      <DendrologicInfoModal info={data} isOpen={mapShown} />
+      <DendrologicInfoModal info={data} selectedFeature={selected} isOpen={mapShown} />
     </>
   );
 };

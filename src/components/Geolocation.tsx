@@ -30,6 +30,7 @@ function AnimatedPanningElement() {
 export default function GeoLocationComponent({
   geoJSONdata,
   updateShown,
+  selectFeature,
   location,
 }) {
   const [coordinates, setCoordinates] = useState<Position | null>(null);
@@ -148,6 +149,7 @@ export default function GeoLocationComponent({
                 click: (geo: unknown) => {
                   console.log(geo);
                   updateShown();
+                  selectFeature(geo?.layer?.feature?.properties);
                 },
               }}
               data={geoJSONdata}

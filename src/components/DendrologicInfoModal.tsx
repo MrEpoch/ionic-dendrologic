@@ -18,10 +18,12 @@ import {
 } from "@ionic/react";
 import { camera } from "ionicons/icons";
 import { usePhotoGallery } from "../hooks/usePhotoGallery";
+import { api_url } from "@/lib/config";
 
-export default function DendrologicInfoModal({ isOpen, info }) {
+export default function DendrologicInfoModal({ isOpen, info, selectedFeature }) {
   const modal = useRef<HTMLIonModalElement>(null);
   const { photos, takePhoto } = usePhotoGallery();
+  console.log(selectedFeature);
 
   return (
     <IonModal
@@ -32,15 +34,19 @@ export default function DendrologicInfoModal({ isOpen, info }) {
     >
       <IonContent className="ion-padding">
         <IonList inset={true}>
-          {info?.geojson?.features.map(({ properties }) => (
-            <IonItem key={properties.id}>
-              <IonFabButton onClick={takePhoto} className="camera-button">
+            <IonItem key={selectedFeature?.id}>
+              <IonFabButton onClick={async () => await takePhoto(info?.id, selectedFeature?.id)} className="camera-button">
                 <IonIcon icon={camera} />
               </IonFabButton>
-              <IonLabel>{properties.name}</IonLabel>
+              <IonLabel>{selectedFeature?.name}</IonLabel>
             </IonItem>
-          ))}
         </IonList>
+        {photos && photos.length > 0 && (
+          <IonImg src={photos[0].webviewPath} />
+        )}
+        {selectedFeature && selectedFeature?.image.map((image, i) => (
+          <IonImg src={"https://minio.stencukpage.com/dendrologic-bucket/" + image} />
+        ))}
       </IonContent>
     </IonModal>
   );

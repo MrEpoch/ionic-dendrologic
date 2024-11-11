@@ -11,6 +11,8 @@ import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Preferences } from "@capacitor/preferences";
 import { Capacitor, CapacitorHttp } from "@capacitor/core";
 import { useHistory } from "react-router-dom";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
+import { api_url, sessionName } from "@/lib/config";
 
 export interface UserPhoto {
   filepath: string;
@@ -26,6 +28,8 @@ export function usePhotoGallery() {
   const savePicture = async (
     photo: Photo,
     fileName: string,
+    geoRequestId: string,
+    featureId: string
   ): Promise<UserPhoto> => {
     let base64Data: string = photo.base64String as string;
 
@@ -43,16 +47,25 @@ export function usePhotoGallery() {
 
     const imageJson = {
       image: photo.base64String as string,
+      featureId: featureId,
     };
 
     try {
+      let token = null;
+      try {
+        const keys = await SecureStoragePlugin.keys();
+        token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+
       const res = await CapacitorHttp.post({
-        url: "https://dendrologic-web.stencukpage.com/api/images",
-               // url: "http://localhost:3752/api/images",
+        //url: "https://dendrologic-web.stencukpage.com/api/images",
+        url: `${api_url}/api/images/` + geoRequestId,
         data: imageJson,
         headers: {
-          "credentials": "include",
           "Content-Type": "application/json",
+          "Authorization-Session": token?.value ?? "",
         },
       });
       console.log(res);
@@ -75,7 +88,7 @@ export function usePhotoGallery() {
     }
   };
 
-  const takePhoto = async () => {
+  const takePhoto = async (geoRequestId, featureId) => {
     const photo = await Camera.getPhoto({
       resultType: CameraResultType.Base64,
       saveToGallery: true,
@@ -84,7 +97,7 @@ export function usePhotoGallery() {
     });
 
     const fileName = Date.now() + ".jpeg";
-    const savedFileImage = await savePicture(photo, fileName);
+    const savedFileImage = await savePicture(photo, fileName, geoRequestId, featureId);
     const newPhotos = [savedFileImage, ...photos];
     setPhotos(newPhotos);
     Preferences.set({ key: PHOTO_STORAGE, value: JSON.stringify(newPhotos) });
