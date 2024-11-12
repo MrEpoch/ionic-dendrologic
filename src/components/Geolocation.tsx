@@ -33,6 +33,7 @@ export default function GeoLocationComponent({
   selectFeature,
   location,
 }) {
+  {/*
   const [coordinates, setCoordinates] = useState<Position | null>(null);
   // no any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -130,9 +131,13 @@ export default function GeoLocationComponent({
     });
   }
 
+  */}
+
   return (
     <div className={"map-container"}>
-      {GPSenabledRef.current && location && (
+    {/*
+    {GPSenabledRef.current && location && (
+  */}
         <MapContainer
           className="map-container"
           zoom={13}
@@ -156,7 +161,9 @@ export default function GeoLocationComponent({
             ></GeoJSON>
           )}
         </MapContainer>
+    {/*
       )}
+      */}
     </div>
   );
 }

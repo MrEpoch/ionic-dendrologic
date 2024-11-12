@@ -9,12 +9,24 @@ import ResetPasswordPage from "@/pages/auth/ResetPassword";
 import ResetPassword2faPage from "@/pages/auth/ResetPassword2fa";
 import ResetPasswordVerifyEmailPage from "@/pages/auth/ResetPasswordVerifyEmail";
 import ForgotPasswordPage from "@/pages/auth/ForgotPassword";
-import { IonPage, IonRouterOutlet } from "@ionic/react";
+import { IonButtons, IonHeader, IonPage, IonRouterOutlet, IonToolbar } from "@ionic/react";
 import { Route } from "react-router";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function AuthRouting() {
   return (
     <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <Link to="/main/requests">
+              <ArrowLeft />
+            </Link>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+
       <IonRouterOutlet>
         <Route key={Math.random() * Math.random()} exact path="/auth/login">
           <LoginPage />

@@ -10,6 +10,7 @@ import React from "react";
 import { ellipse, square, triangle } from "ionicons/icons";
 import { Route } from "react-router";
 import RequestsTab from "@/pages/dendrologic/RequestsTab";
+import AccountTab from "@/pages/auth/AccountTab";
 
 export default function MainTabs() {
   return (
@@ -21,6 +22,7 @@ export default function MainTabs() {
         <Route exact path="/main/tab2">
         </Route>
         <Route exact path="/main/account">
+          <AccountTab />
         </Route>
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
