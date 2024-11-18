@@ -10,15 +10,17 @@ export default function Page() {
   const history = useHistory();
   const loadingData = useRef(false);
 
-  const fetchData = (async () => {
+  const fetchData = async () => {
     try {
       // Check rate limit
       let token = null;
       try {
         const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+        token = keys.value.includes(sessionName)
+          ? await SecureStoragePlugin.get({ key: sessionName })
+          : null;
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
       const twoFactor = await CapacitorHttp.request({
         method: "GET",
@@ -31,20 +33,19 @@ export default function Page() {
       console.log(twoFactor.data);
       const twoFactorRes = await twoFactor.data;
       if (!twoFactorRes.success) {
-        if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+        if (twoFactorRes?.error === "UNAUTHORIZED")
+          await SecureStoragePlugin.clear();
         if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
-        return history.push('/');
+        return history.push("/");
       }
 
       // Get data
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       setLoading(false);
     }
-  });
-
-
+  };
 
   useEffect(() => {
     if (!loadingData.current) {
@@ -55,12 +56,12 @@ export default function Page() {
 
   if (loading) return <div>Loading...</div>;
 
-	return (
+  return (
     <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background items-center h-full w-full">
-			<h1>Two-factor authentication</h1>
-			<p>Enter the code from your authenticator app.</p>
-			<TwoFactorVerificationForm />
+      <h1>Two-factor authentication</h1>
+      <p>Enter the code from your authenticator app.</p>
+      <TwoFactorVerificationForm />
       <Link to="/auth/2fa/reset">Use recovery code</Link>
     </div>
-	);
+  );
 }

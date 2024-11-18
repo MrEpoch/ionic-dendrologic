@@ -29,8 +29,8 @@ export function usePhotoGallery() {
     photo: Photo,
     fileName: string,
     geoRequestId: string,
-    featureId: string
-  ): Promise<UserPhoto> => {
+    featureId: string,
+  ): Promise<UserPhoto | null> => {
     let base64Data: string = photo.base64String as string;
 
     console.log("Photo is", photo);
@@ -54,10 +54,14 @@ export function usePhotoGallery() {
       let token = null;
       try {
         const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+        token = keys.value.includes(sessionName)
+          ? await SecureStoragePlugin.get({ key: sessionName })
+          : null;
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
+
+      console.log("took photo");
 
       const res = await CapacitorHttp.post({
         //url: "https://dendrologic-web.stencukpage.com/api/images",
@@ -68,6 +72,15 @@ export function usePhotoGallery() {
           "Authorization-Session": token?.value ?? "",
         },
       });
+      const data = res.data;
+
+      console.log("after sending photo");
+      if (!data.success && data.error === "UNAUTHORIZED") {
+        await SecureStoragePlugin.clear();
+        console.error("err");
+        history.push("/auth/login");
+        return null;
+      }
       console.log(res);
     } catch (e) {
       console.error(e);
@@ -97,10 +110,19 @@ export function usePhotoGallery() {
     });
 
     const fileName = Date.now() + ".jpeg";
-    const savedFileImage = await savePicture(photo, fileName, geoRequestId, featureId);
+    const savedFileImage = await savePicture(
+      photo,
+      fileName,
+      geoRequestId,
+      featureId,
+    );
+    if (!savedFileImage) {
+      return false;
+    }
     const newPhotos = [savedFileImage, ...photos];
     setPhotos(newPhotos);
     Preferences.set({ key: PHOTO_STORAGE, value: JSON.stringify(newPhotos) });
+    return true;
   };
 
   useEffect(() => {

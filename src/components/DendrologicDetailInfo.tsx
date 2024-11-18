@@ -1,18 +1,7 @@
-import {
-  IonContent,
-  IonFabButton,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-} from "@ionic/react";
-import React from "react";
+import { IonContent, IonList } from "@ionic/react";
 import "./Geolocation.css";
-import { usePhotoGallery } from "../hooks/usePhotoGallery";
 
-export default function DendrologicDetailInfo({ info, shown }) {
-  function handleCamera() {}
-
+export default function DendrologicDetailInfo({ shown }) {
   return (
     <>
       {shown && (

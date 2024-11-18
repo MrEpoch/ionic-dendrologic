@@ -1,4 +1,7 @@
-import { PasswordResetRecoveryCodeForm, PasswordResetTOTPForm } from "@/components/auth/PasswordResetForm";
+import {
+  PasswordResetRecoveryCodeForm,
+  PasswordResetTOTPForm,
+} from "@/components/auth/PasswordResetForm";
 import { api_url, passwordResetSessionName } from "@/lib/config";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { CapacitorHttp } from "@capacitor/core";
@@ -10,16 +13,17 @@ export default function Page() {
   const history = useHistory();
   const loadingData = useRef(false);
 
-
   const fetchData = async () => {
     try {
       // Check rate limit
       let token = null;
       try {
         const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
+        token = keys.value.includes(passwordResetSessionName)
+          ? await SecureStoragePlugin.get({ key: passwordResetSessionName })
+          : null;
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
       const settings = await CapacitorHttp.request({
         method: "GET",
@@ -32,19 +36,19 @@ export default function Page() {
       console.log(settings.data);
       const settingsRes = await settings.data;
       if (!settingsRes.success) {
-        if (settingsRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+        if (settingsRes?.error === "UNAUTHORIZED")
+          await SecureStoragePlugin.clear();
         if (settingsRes.redirect) return history.push(settingsRes.redirect);
-        return history.push('/');
+        return history.push("/");
       }
 
       // Get data
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     if (!loadingData.current) {
@@ -55,15 +59,15 @@ export default function Page() {
 
   if (loading) return <div>Loading...</div>;
 
-	return (
+  return (
     <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background items-center h-full w-full">
-			<h1>Two-factor authentication</h1>
-			<p>Enter the code from your authenticator app.</p>
-			<PasswordResetTOTPForm />
-			<section>
-				<h2>Use your recovery code instead</h2>
-				<PasswordResetRecoveryCodeForm />
-			</section>
+      <h1>Two-factor authentication</h1>
+      <p>Enter the code from your authenticator app.</p>
+      <PasswordResetTOTPForm />
+      <section>
+        <h2>Use your recovery code instead</h2>
+        <PasswordResetRecoveryCodeForm />
+      </section>
     </div>
-	);
+  );
 }

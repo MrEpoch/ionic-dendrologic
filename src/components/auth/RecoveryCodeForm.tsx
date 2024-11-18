@@ -12,9 +12,11 @@ export function RecoveryCodeForm({ recoveryCode }) {
     let token = null;
     try {
       const keys = await SecureStoragePlugin.keys();
-      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+      token = keys.value.includes(sessionName)
+        ? await SecureStoragePlugin.get({ key: sessionName })
+        : null;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
     const recoveryCodeApi = await CapacitorHttp.request({
       method: "POST",
@@ -26,7 +28,8 @@ export function RecoveryCodeForm({ recoveryCode }) {
       data: JSON.stringify({}),
     });
     const codeResponse = await recoveryCodeApi.data;
-    if (codeResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+    if (codeResponse?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
     if (codeResponse.success && codeResponse.recoveryCode) {
       console.log("Success", codeResponse);
       setRecoveryCodeState(codeResponse.recoveryCode);
@@ -38,7 +41,9 @@ export function RecoveryCodeForm({ recoveryCode }) {
       <h2>Recovery code</h2>
       <p>{recoveryCodeState}</p>
       <form className="space-y-8">
-        <Button onClick={onSubmit} type="button">Generate new recovery code</Button>
+        <Button onClick={onSubmit} type="button">
+          Generate new recovery code
+        </Button>
       </form>
     </>
   );

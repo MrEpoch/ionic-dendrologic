@@ -5,10 +5,10 @@ import GeoLocationComponent from "./Geolocation";
 import DendrologicInfoModal from "./DendrologicInfoModal";
 import { CapacitorHttp } from "@capacitor/core";
 import { api_url } from "@/lib/config";
+import geoJsonData from "../assets/stromy.json";
+import OpenLayers from "./openLayers";
 
-const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
-  match,
-}) => {
+const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({ match }) => {
   const zodValidateId = z.string().length(36);
 
   function updateShown() {
@@ -22,45 +22,48 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
   const [mapShown, setMapShown] = useState(false);
   const [selected, setSelected] = useState<null | any>(null);
 
-
   function selectFeature(feature) {
     setSelected(feature);
     updateShown();
   }
 
-  const fetchData = (async () =>{
-      try {
-        // Check rate limit
-        const validateId = zodValidateId.safeParse(match?.params?.id);
-        if (!validateId.success) {
-          return history.push("/main/requests");
-        }
-
-        console.log("fetch");
-        const geoData = await CapacitorHttp.request({
-          method: "GET",
-          url: `${api_url}/api/geo-requests/${validateId.data}`,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        const geoDataRes = await geoData.data;
-        console.log(geoDataRes);
-        if (!geoDataRes.success) {
-          if (geoDataRes.redirect) return history.push(geoDataRes.redirect);
-          return history.push('/');
-        }
-
-        // Get data
-        setData(geoDataRes.geoRequests);
-
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      // Check rate limit
+      const validateId = zodValidateId.safeParse(match?.params?.id);
+      if (!validateId.success) {
+        return history.push("/main/requests");
       }
-  });
+
+      console.log("fetch");
+      const geoData = await CapacitorHttp.request({
+        method: "GET",
+        url: `${api_url}/api/geo-requests/${validateId.data}`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const geoDataRes = await geoData.data;
+      console.log(geoDataRes);
+      if (!geoDataRes.success) {
+        if (geoDataRes.redirect) return history.push(geoDataRes.redirect);
+        return history.push("/");
+      }
+
+      console.log(geoJsonData);
+      setData({
+        geojson: geoJsonData,
+      });
+
+      // Get data
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!loadingData.current) {
@@ -72,7 +75,6 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
 
   if (loading) return <div>Loading...</div>;
 
-
   return (
     <>
       {/*
@@ -83,6 +85,8 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
       </IonFab>
       <DendrologicDetailInfo shown={mapShown} info={data} />
     */}
+      <OpenLayers geoJSONData={data?.geojson} />
+    {/*
       <GeoLocationComponent
         updateShown={updateShown}
         shown={mapShown}
@@ -90,7 +94,13 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({
         location={data?.location}
         geoJSONdata={data?.geojson}
       />
-      <DendrologicInfoModal info={data} selectedFeature={selected} isOpen={mapShown} />
+      <DendrologicInfoModal
+        refetch={fetchData}
+        info={data}
+        selectedFeature={selected}
+        isOpen={mapShown}
+      />
+    */}
     </>
   );
 };

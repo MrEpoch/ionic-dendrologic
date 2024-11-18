@@ -47,10 +47,7 @@ const App: React.FC = () => (
         </Route>
         <Route path="/main" component={MainTabs} />
         <Route path="/map-requests" component={GeoTabs} />
-        <Route
-          path={"/map-request/:id"}
-          component={DendRequestPage}
-        />
+        <Route path={"/map-request/:id"} component={DendRequestPage} />
         <Route path={"/auth"} component={AuthRouting} />
       </IonRouterOutlet>
     </IonReactRouter>

@@ -11,14 +11,16 @@ export default function Page() {
   const history = useHistory();
   const loadingData = useRef(false);
 
-  const fetchData = (async () => {
+  const fetchData = async () => {
     try {
       let token = null;
       try {
         const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
+        token = keys.value.includes(passwordResetSessionName)
+          ? await SecureStoragePlugin.get({ key: passwordResetSessionName })
+          : null;
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
 
       const resetPassword = await CapacitorHttp.request({
@@ -32,18 +34,20 @@ export default function Page() {
       console.log(resetPassword.data);
       const resetPasswordRes = await resetPassword.data;
       if (!resetPasswordRes.success) {
-        if (resetPasswordRes.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-        if (resetPasswordRes.redirect) return history.push(resetPasswordRes.redirect);
-        return history.push('/');
+        if (resetPasswordRes.error === "UNAUTHORIZED")
+          await SecureStoragePlugin.clear();
+        if (resetPasswordRes.redirect)
+          return history.push(resetPasswordRes.redirect);
+        return history.push("/");
       }
 
       // Get data
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       setLoading(false);
     }
-  });
+  };
 
   useEffect(() => {
     if (!loadingData.current) {
@@ -53,10 +57,10 @@ export default function Page() {
   }, [history]);
 
   if (loading) return <div>Loading...</div>;
-	return (
+  return (
     <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background items-center h-full w-full">
-			<h1>Enter your new password</h1>
-			<PasswordResetForm />
-		</div>
-	);
+      <h1>Enter your new password</h1>
+      <PasswordResetForm />
+    </div>
+  );
 }

@@ -8,16 +8,17 @@ import CustomField from "./CustomField";
 import { useHistory } from "react-router-dom";
 import { api_url, emailName, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
-import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { errorHandler } from "@/lib/utils";
+import { useEffect } from "react";
 
 export const formSchema = z
   .object({
     username: z
       .string()
       .min(1, { message: "Musi být nejkratě 1 znak" })
-    .max(255, { message: "Musi být měně než 255 znaků" })
-    .optional(),
+      .max(255, { message: "Musi být měně než 255 znaků" })
+      .optional(),
     email: z.string().email(),
     password: z
       .string()
@@ -42,87 +43,104 @@ export function AuthForm({
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: authType === "register" ? {
-      email: "",
-      password: "",
-      passwordConfirm: "",
-      username: "",
-    } : { email: "", password: "" },
+    defaultValues:
+      authType === "register"
+        ? {
+            email: "",
+            password: "",
+            passwordConfirm: "",
+            username: "",
+          }
+        : { email: "", password: "" },
   });
 
   const history = useHistory();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    if (authType === "register") {
-      const user = await CapacitorHttp.request({
-        method: "POST",
-        url: `${api_url}/api/auth/register`,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: JSON.stringify({
-          username: values.username,
-          email: values.email,
-          password: values.password,
-        })
-      });
-      console.log(user.data);
+    try {
+      if (authType === "register") {
+        const user = await CapacitorHttp.request({
+          method: "POST",
+          url: `${api_url}/api/auth/register`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: JSON.stringify({
+            username: values.username,
+            email: values.email,
+            password: values.password,
+          }),
+        });
+        console.log(user.data);
 
-      const userResponse = await user.data;
-      if (userResponse.success) {
-        const keys = await SecureStoragePlugin.keys();
-        keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
-        await SecureStoragePlugin.set({ key: sessionName, value: userResponse.sessionToken });
-        await SecureStoragePlugin.set({ key: emailName, value: userResponse.emailRequestId });
-        if (userResponse.redirect) return history.push(userResponse.redirect);
-        return history.push("/auth/2fa/setup");
-      } else {
-        if (userResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-        if (userResponse.redirect) return history.push(userResponse.redirect);
-        return history.push("/auth/register");
-      }
-    } else {
-      const user = await CapacitorHttp.request({
-        method: "POST",
-        url: `${api_url}/api/auth/login`,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        })
-      });
-      const userResponse = await user.data;
-      if (userResponse.success) {
-
-        // Checks if session exists, otherwise delates it
-
-        const keys = await SecureStoragePlugin.keys();
-        keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
-
-        // Adds new session
-
-        await SecureStoragePlugin.set({ key: sessionName, value: userResponse.sessionToken });
-
-        // Redirects if possible
-        
-        if (userResponse.redirect) return history.push(userResponse.redirect);
-
-        // In worst case will user need to handle two factor auth
-
-        return history.push("/auth/2fa");
-      } else {
-
-        // Error handler
-
-        if (userResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-        if (userResponse.redirect) {
-          return history.push(userResponse.redirect);
+        const userResponse = await user.data;
+        if (userResponse.success) {
+          const keys = await SecureStoragePlugin.keys();
+          keys.value.includes(sessionName) &&
+            (await SecureStoragePlugin.remove({ key: sessionName }));
+          await SecureStoragePlugin.set({
+            key: sessionName,
+            value: userResponse.sessionToken,
+          });
+          await SecureStoragePlugin.set({
+            key: emailName,
+            value: userResponse.emailRequestId,
+          });
+          if (userResponse.redirect) return history.push(userResponse.redirect);
+          return history.push("/auth/2fa/setup");
+        } else {
+          if (userResponse?.error === "UNAUTHORIZED")
+            await SecureStoragePlugin.clear();
+          if (userResponse.redirect) return history.push(userResponse.redirect);
+          return history.push("/auth/register");
         }
-        return history.push("/auth/login");
+      } else {
+        const user = await CapacitorHttp.request({
+          method: "POST",
+          url: `${api_url}/api/auth/login`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: JSON.stringify({
+            email: values.email,
+            password: values.password,
+          }),
+        });
+        const userResponse = await user.data;
+        if (userResponse.success) {
+          // Checks if session exists, otherwise delates it
+
+          const keys = await SecureStoragePlugin.keys();
+          keys.value.includes(sessionName) &&
+            (await SecureStoragePlugin.remove({ key: sessionName }));
+
+          // Adds new session
+
+          await SecureStoragePlugin.set({
+            key: sessionName,
+            value: userResponse.sessionToken,
+          });
+
+          // Redirects if possible
+
+          if (userResponse.redirect) return history.push(userResponse.redirect);
+
+          // In worst case will user need to handle two factor auth
+
+          return history.push("/auth/2fa");
+        } else {
+          // Error handler
+
+          if (userResponse?.error === "UNAUTHORIZED")
+            await SecureStoragePlugin.clear();
+          if (userResponse.redirect) {
+            return history.push(userResponse.redirect);
+          }
+          return history.push("/auth/login");
+        }
       }
+    } catch (e) {
+      console.error("error: ", e);
     }
   }
 

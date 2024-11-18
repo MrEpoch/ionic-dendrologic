@@ -26,9 +26,11 @@ export function TwoFactorSetUpForm({ encodedTOTPKey }) {
     let token = null;
     try {
       const keys = await SecureStoragePlugin.keys();
-      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+      token = keys.value.includes(sessionName)
+        ? await SecureStoragePlugin.get({ key: sessionName })
+        : null;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
     const twoFactor = await CapacitorHttp.request({
       method: "POST",
@@ -40,11 +42,12 @@ export function TwoFactorSetUpForm({ encodedTOTPKey }) {
       data: JSON.stringify({
         code: values.code,
         key: encodedTOTPKey,
-      })
+      }),
     });
 
     const twoFactorRes = await twoFactor.data;
-    if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+    if (twoFactorRes?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
     console.log(twoFactorRes);
     if (twoFactorRes.success) {
       console.log("Success", twoFactorRes);
@@ -65,12 +68,12 @@ export function TwoFactorSetUpForm({ encodedTOTPKey }) {
         />
         <Button type="submit">Submit</Button>
       </form>
-    {recoveryCode && 
-      <>
-        <p>Recovery code: {recoveryCode}</p>
-        <Link to="/auth/settings">Next</Link>
-      </>
-    }
+      {recoveryCode && (
+        <>
+          <p>Recovery code: {recoveryCode}</p>
+          <Link to="/auth/settings">Next</Link>
+        </>
+      )}
     </Form>
   );
 }
@@ -90,9 +93,11 @@ export function TwoFactorVerificationForm() {
     let token = null;
     try {
       const keys = await SecureStoragePlugin.keys();
-      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+      token = keys.value.includes(sessionName)
+        ? await SecureStoragePlugin.get({ key: sessionName })
+        : null;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
     const twoFactor = await CapacitorHttp.request({
       method: "POST",
@@ -102,11 +107,12 @@ export function TwoFactorVerificationForm() {
         "Authorization-Session": token?.value ?? "",
       },
       data: JSON.stringify({
-        code: values.code
+        code: values.code,
       }),
     });
     const twoFactorRes = await twoFactor.data;
-    if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+    if (twoFactorRes?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
     if (twoFactorRes.success) {
       return history.push("/");
     }
@@ -120,7 +126,13 @@ export function TwoFactorVerificationForm() {
           name="code"
           formLabel={"Code"}
           render={({ field }) => (
-            <Input autoComplete="one-time-code" id="form-totp.code" type="text" value={field.value} {...field} />
+            <Input
+              autoComplete="one-time-code"
+              id="form-totp.code"
+              type="text"
+              value={field.value}
+              {...field}
+            />
           )}
         />
         <Button type="submit">Verify</Button>
@@ -144,9 +156,11 @@ export function TwoFactorResetForm() {
     let token = null;
     try {
       const keys = await SecureStoragePlugin.keys();
-      token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
+      token = keys.value.includes(sessionName)
+        ? await SecureStoragePlugin.get({ key: sessionName })
+        : null;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
     const twoFactor = await CapacitorHttp.request({
       method: "POST",
@@ -156,11 +170,12 @@ export function TwoFactorResetForm() {
         "Authorization-Session": token?.value ?? "",
       },
       data: JSON.stringify({
-        code: values.code
+        code: values.code,
       }),
     });
     const twoFactorRes = await twoFactor.data;
-    if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+    if (twoFactorRes?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
     if (twoFactorRes.success) {
       return history.push("/auth/2fa/setup");
     }
@@ -174,7 +189,13 @@ export function TwoFactorResetForm() {
           name="code"
           formLabel={"Recovery Code"}
           render={({ field }) => (
-            <Input autoComplete="one-time-code" id="form-totp.code" type="text" value={field.value} {...field} />
+            <Input
+              autoComplete="one-time-code"
+              id="form-totp.code"
+              type="text"
+              value={field.value}
+              {...field}
+            />
           )}
         />
         <Button type="submit">Verify</Button>

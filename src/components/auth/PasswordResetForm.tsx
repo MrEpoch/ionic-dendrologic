@@ -25,9 +25,11 @@ export function PasswordResetForm() {
     let token = null;
     try {
       const keys = await SecureStoragePlugin.keys();
-      token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
+      token = keys.value.includes(passwordResetSessionName)
+        ? await SecureStoragePlugin.get({ key: passwordResetSessionName })
+        : null;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
     const password = await CapacitorHttp.request({
       method: "POST",
@@ -39,21 +41,29 @@ export function PasswordResetForm() {
       data: JSON.stringify({
         password: values.password,
         newPassword: values.newPassword,
-      })
+      }),
     });
 
     const passwordResponse = await password.data;
-    if (passwordResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
+    if (passwordResponse?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
     if (passwordResponse.success) {
       console.log("Success", passwordResponse);
       const keys = await SecureStoragePlugin.keys();
-      keys.value.includes(passwordResetSessionName) && await SecureStoragePlugin.remove({ key: passwordResetSessionName });
-      keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
-      await SecureStoragePlugin.set({ key: sessionName, value: passwordResponse.sessionToken });
-      if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
+      keys.value.includes(passwordResetSessionName) &&
+        (await SecureStoragePlugin.remove({ key: passwordResetSessionName }));
+      keys.value.includes(sessionName) &&
+        (await SecureStoragePlugin.remove({ key: sessionName }));
+      await SecureStoragePlugin.set({
+        key: sessionName,
+        value: passwordResponse.sessionToken,
+      });
+      if (passwordResponse.redirect)
+        return history.push(passwordResponse.redirect);
       return history.push("/auth/settings");
     }
-    if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
+    if (passwordResponse.redirect)
+      return history.push(passwordResponse.redirect);
   }
 
   return (
@@ -101,28 +111,32 @@ export function PasswordResetTOTPForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
-      console.log(values);
-      let token = null;
-      try {
-        const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      const password = await CapacitorHttp.request({
-        method: "POST",
-        url: `${api_url}/api/auth/reset-password/2fa/totp-reset`,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization-Password-Session": token?.value ?? "",
-        },
-        data: JSON.stringify({
-          code: values.code
-        }),
-      });
-      const twoFactorRes = await password.data;
-      if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-      if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect); {
+    console.log(values);
+    let token = null;
+    try {
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(passwordResetSessionName)
+        ? await SecureStoragePlugin.get({ key: passwordResetSessionName })
+        : null;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    const password = await CapacitorHttp.request({
+      method: "POST",
+      url: `${api_url}/api/auth/reset-password/2fa/totp-reset`,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization-Password-Session": token?.value ?? "",
+      },
+      data: JSON.stringify({
+        code: values.code,
+      }),
+    });
+    const twoFactorRes = await password.data;
+    if (twoFactorRes?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
+    if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
+    {
       if (twoFactorRes.success) {
         console.log("Success", twoFactorRes);
         return history.push("/auth/reset-password");
@@ -158,28 +172,32 @@ export function PasswordResetRecoveryCodeForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
-      console.log(values);
-      let token = null;
-      try {
-        const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      const password = await CapacitorHttp.request({
-        method: "POST",
-        url: `${api_url}/api/auth/reset-password/2fa/2fa-with-recovery-code`,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization-Password-Session": token?.value ?? "",
-        },
-        data: JSON.stringify({
-          code: values.code
-        }),
-      });
-      const twoFactorRes = await password.data;
-      if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-      if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect); {
+    console.log(values);
+    let token = null;
+    try {
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(passwordResetSessionName)
+        ? await SecureStoragePlugin.get({ key: passwordResetSessionName })
+        : null;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    const password = await CapacitorHttp.request({
+      method: "POST",
+      url: `${api_url}/api/auth/reset-password/2fa/2fa-with-recovery-code`,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization-Password-Session": token?.value ?? "",
+      },
+      data: JSON.stringify({
+        code: values.code,
+      }),
+    });
+    const twoFactorRes = await password.data;
+    if (twoFactorRes?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
+    if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
+    {
       if (twoFactorRes.success) {
         console.log("Success", twoFactorRes);
         return history.push("/auth/reset-password");
@@ -216,32 +234,35 @@ export function PasswordResetEmailVerificationForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaCode>) {
     console.log(values);
-      let token = null;
-      try {
-        const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      const password = await CapacitorHttp.request({
-        method: "POST",
-        url: `${api_url}/api/auth/reset-password/verify-email`,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization-Password-Session": token?.value ?? "",
-        },
-        data: JSON.stringify({
-          code: values.code
-        }),
-      });
-      const twoFactorRes = await password.data;
-      console.log(twoFactorRes);
-      if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-      if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
-      if (twoFactorRes.success) {
-        console.log("Success", twoFactorRes);
-        return history.push("/auth/reset-password");
-      }
+    let token = null;
+    try {
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(passwordResetSessionName)
+        ? await SecureStoragePlugin.get({ key: passwordResetSessionName })
+        : null;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    const password = await CapacitorHttp.request({
+      method: "POST",
+      url: `${api_url}/api/auth/reset-password/verify-email`,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization-Password-Session": token?.value ?? "",
+      },
+      data: JSON.stringify({
+        code: values.code,
+      }),
+    });
+    const twoFactorRes = await password.data;
+    console.log(twoFactorRes);
+    if (twoFactorRes?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
+    if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
+    if (twoFactorRes.success) {
+      console.log("Success", twoFactorRes);
+      return history.push("/auth/reset-password");
+    }
   }
 
   return (

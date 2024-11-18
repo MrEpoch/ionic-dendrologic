@@ -16,41 +16,44 @@ export default function Page() {
 
   const fetchData = async () => {
     try {
-        let token = null;
-        try {
-          const keys = await SecureStoragePlugin.keys();
-          token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-        const twoFactor = await CapacitorHttp.request({
-          method: "GET",
-          url: `${api_url}/api/auth/2fa/setup`,
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization-Session": token?.value ?? "",
-          },
-        });
-        console.log(twoFactor.data);
-        const twoFactorRes = await twoFactor.data;
-        if (!twoFactorRes.success) {
-          if (twoFactorRes?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-          if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
-          return history.push('/');
-        }
-
-        // Get data
-
-        setKeyURI(twoFactorRes.keyURI);
-        setEncodedTOTPKey(twoFactorRes.encodedTOTPKey);
-        setQRCode(twoFactorRes.qrCode);
-
-        setLoading(false);
+      let token = null;
+      try {
+        const keys = await SecureStoragePlugin.keys();
+        token = keys.value.includes(sessionName)
+          ? await SecureStoragePlugin.get({ key: sessionName })
+          : null;
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
+        console.error("Error fetching data:", error);
       }
-    };
+      const twoFactor = await CapacitorHttp.request({
+        method: "GET",
+        url: `${api_url}/api/auth/2fa/setup`,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization-Session": token?.value ?? "",
+        },
+      });
+      console.log(twoFactor.data);
+      const twoFactorRes = await twoFactor.data;
+      if (!twoFactorRes.success) {
+        if (twoFactorRes?.error === "UNAUTHORIZED")
+          await SecureStoragePlugin.clear();
+        if (twoFactorRes.redirect) return history.push(twoFactorRes.redirect);
+        return history.push("/");
+      }
+
+      // Get data
+
+      setKeyURI(twoFactorRes.keyURI);
+      setEncodedTOTPKey(twoFactorRes.encodedTOTPKey);
+      setQRCode(twoFactorRes.qrCode);
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!loadingData.current) {

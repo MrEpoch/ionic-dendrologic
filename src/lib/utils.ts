@@ -32,16 +32,19 @@ export async function errorHandler(errorType: string) {
   const history = useHistory();
   switch (errorType) {
     case "UNAUTHORIZED":
-      keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
-      keys.value.includes(emailName) && await SecureStoragePlugin.remove({ key: emailName });
-      keys.value.includes(passwordResetSessionName) && await SecureStoragePlugin.remove({ key: passwordResetSessionName });
+      keys.value.includes(sessionName) &&
+        (await SecureStoragePlugin.remove({ key: sessionName }));
+      keys.value.includes(emailName) &&
+        (await SecureStoragePlugin.remove({ key: emailName }));
+      keys.value.includes(passwordResetSessionName) &&
+        (await SecureStoragePlugin.remove({ key: passwordResetSessionName }));
       return history.push("/auth/login");
     case "EMAIL_NOT_VERIFIED":
       return history.push("/auth/verify-email");
     case "2FA_NOT_ENABLED":
       return history.push("/auth/2fa/setup");
     case "BAD_REQUEST":
-      return "BAD_REQUEST"
+      return "BAD_REQUEST";
     case "FILE_UPLOAD_ERROR":
       // TODO
       return history.push("/");

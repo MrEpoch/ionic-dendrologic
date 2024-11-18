@@ -19,8 +19,7 @@ export default function MainTabs() {
         <Route exact path="/main/requests">
           <RequestsTab />
         </Route>
-        <Route exact path="/main/tab2">
-        </Route>
+        <Route exact path="/main/tab2"></Route>
         <Route exact path="/main/account">
           <AccountTab />
         </Route>

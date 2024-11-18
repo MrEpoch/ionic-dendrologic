@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import {
   IonModal,
   IonHeader,
@@ -10,10 +10,14 @@ import {
 import { camera } from "ionicons/icons";
 import { usePhotoGallery } from "../hooks/usePhotoGallery";
 
-export default function DendrologicInfoModal({ isOpen, info, selectedFeature }) {
+export default function DendrologicInfoModal({
+  isOpen,
+  info,
+  selectedFeature,
+  refetch,
+}) {
   const modal = useRef<HTMLIonModalElement>(null);
   const { takePhoto } = usePhotoGallery();
-  console.log(selectedFeature);
 
   return (
     <IonModal
@@ -24,14 +28,26 @@ export default function DendrologicInfoModal({ isOpen, info, selectedFeature }) 
     >
       <IonContent className="ion-padding">
         <div className="flex justify-center gap-4 w-full items-center">
-          <IonFabButton onClick={async () => await takePhoto(info?.id, selectedFeature?.id)} className="camera-button">
+          <IonFabButton
+            onClick={async () => {
+              const res = await takePhoto(info?.id, selectedFeature?.id);
+              if (res) {
+                refetch();
+                modal.current?.dismiss();
+              }
+            }}
+            className="camera-button"
+          >
             <IonIcon icon={camera} />
           </IonFabButton>
           <IonHeader className="text-xl">{selectedFeature?.name}</IonHeader>
         </div>
-        {selectedFeature && selectedFeature?.image.map((image, i) => (
-          <IonImg src={"https://minio.stencukpage.com/dendrologic-bucket/" + image} />
-        ))}
+        {selectedFeature &&
+          selectedFeature?.image.map((image, i) => (
+            <IonImg
+              src={"https://minio.stencukpage.com/dendrologic-bucket/" + image}
+            />
+          ))}
       </IonContent>
     </IonModal>
   );

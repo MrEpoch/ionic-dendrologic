@@ -12,15 +12,17 @@ export default function Page() {
   const history = useHistory();
   const loadingData = useRef(false);
 
-  const fetchData = (async () => {
+  const fetchData = async () => {
     try {
       // Check rate limit
       let token = null;
       const keys = await SecureStoragePlugin.keys();
       try {
-        token = keys.value.includes(passwordResetSessionName) ? await SecureStoragePlugin.get({ key: passwordResetSessionName }) : null;
+        token = keys.value.includes(passwordResetSessionName)
+          ? await SecureStoragePlugin.get({ key: passwordResetSessionName })
+          : null;
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
       const resetPassword = await CapacitorHttp.request({
         method: "GET",
@@ -34,22 +36,23 @@ export default function Page() {
       const resetPasswordRes = await resetPassword.data;
       if (!resetPasswordRes.success) {
         if (resetPasswordRes.error === "UNAUTHORIZED") {
-          keys.value.includes(passwordResetSessionName) && await SecureStoragePlugin.clear();
+          keys.value.includes(passwordResetSessionName) &&
+            (await SecureStoragePlugin.clear());
           return history.push("/auth/login");
-        };
-        if (resetPasswordRes.redirect) return history.push(resetPasswordRes.redirect);
-        return history.push('/');
+        }
+        if (resetPasswordRes.redirect)
+          return history.push(resetPasswordRes.redirect);
+        return history.push("/");
       }
 
       // Get data
       setSession(resetPasswordRes.session);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       setLoading(false);
     }
-  });
-
+  };
 
   useEffect(() => {
     if (!loadingData.current) {
@@ -59,11 +62,11 @@ export default function Page() {
   }, [history]);
 
   if (loading) return <div>Loading...</div>;
-	return (
+  return (
     <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background items-center h-full w-full">
-			<h1>Verify your email address</h1>
-			<p>We sent an 8-digit code to {session?.email}.</p>
-			<PasswordResetEmailVerificationForm />
-		</div>
-	);
+      <h1>Verify your email address</h1>
+      <p>We sent an 8-digit code to {session?.email}.</p>
+      <PasswordResetEmailVerificationForm />
+    </div>
+  );
 }

@@ -9,8 +9,6 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet-defaulticon-compatibility";
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css"; // Re-uses images from ~leaflet package
 
 import { Geolocation, Position } from "@capacitor/geolocation";
 import { Dialog } from "@capacitor/dialog";
@@ -33,7 +31,8 @@ export default function GeoLocationComponent({
   selectFeature,
   location,
 }) {
-  {/*
+  {
+    /*
   const [coordinates, setCoordinates] = useState<Position | null>(null);
   // no any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -131,37 +130,30 @@ export default function GeoLocationComponent({
     });
   }
 
-  */}
+  */
+  }
 
   return (
     <div className={"map-container"}>
-    {/*
+      {/*
     {GPSenabledRef.current && location && (
   */}
-        <MapContainer
-          className="map-container"
-          zoom={13}
-          center={[location.x, location.y]}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <AnimatedPanningElement />
-          {geoJSONdata && (
-            <GeoJSON
-              eventHandlers={{
-                click: (geo: unknown) => {
-                  console.log(geo);
-                  updateShown();
-                  selectFeature(geo?.layer?.feature?.properties);
-                },
-              }}
-              data={geoJSONdata}
-            ></GeoJSON>
-          )}
-        </MapContainer>
-    {/*
+      <MapContainer
+        className="map-container"
+        zoom={5}
+        center={[10.0, 10.0]}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {geoJSONdata && (
+          <GeoJSON
+            data={geoJSONdata}
+          ></GeoJSON>
+        )}
+      </MapContainer>
+      {/*
       )}
       */}
     </div>

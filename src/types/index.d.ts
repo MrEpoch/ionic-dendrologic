@@ -29,15 +29,15 @@ export interface EmailVerificationRequest {
 }
 
 export interface PasswordResetSession {
-	id: string;
-	userId: number;
-	email: string;
-	expiresAt: Date;
-	code: string;
-	emailVerified: boolean;
-	twoFactorVerified: boolean;
+  id: string;
+  userId: number;
+  email: string;
+  expiresAt: Date;
+  code: string;
+  emailVerified: boolean;
+  twoFactorVerified: boolean;
 }
 
 export type PasswordResetSessionValidationResult =
-	| { session: PasswordResetSession; user: User }
-	| { session: null; user: null };
+  | { session: PasswordResetSession; user: User }
+  | { session: null; user: null };

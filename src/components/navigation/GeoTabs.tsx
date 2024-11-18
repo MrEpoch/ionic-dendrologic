@@ -13,10 +13,8 @@ export default function GeoTabs() {
   return (
     <IonTabs>
       <IonRouterOutlet>
-        <Route exact path="/geo/:id">
-        </Route>
-        <Route exact path="/geo/:id/info">
-        </Route>
+        <Route exact path="/geo/:id"></Route>
+        <Route exact path="/geo/:id/info"></Route>
       </IonRouterOutlet>
       <IonTabBar slot="bottom">
         <IonTabButton tab="tab2" href="/geo/map">

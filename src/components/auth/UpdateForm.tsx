@@ -10,18 +10,19 @@ import { CapacitorHttp } from "@capacitor/core";
 import { api_url, emailName, sessionName } from "@/lib/config";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 
-export const formSchemaEmail = z
-  .object({
-    email: z.string().email(),
-  })
-export const formSchemaPassword = z
-  .object({
-    newPassword: z
-      .string()
-      .min(8, { message: "Musí být 8 nebože písmen dlouhé" })
-      .max(255, { message: "Musí být méně než 255 písmen dlouhé" }),
-    password: z.string().min(8, { message: "Musi být nejkratě 8 znaků" }).max(255, { message: "Musi být měně než 255 znaků" }),
-  })
+export const formSchemaEmail = z.object({
+  email: z.string().email(),
+});
+export const formSchemaPassword = z.object({
+  newPassword: z
+    .string()
+    .min(8, { message: "Musí být 8 nebože písmen dlouhé" })
+    .max(255, { message: "Musí být méně než 255 písmen dlouhé" }),
+  password: z
+    .string()
+    .min(8, { message: "Musi být nejkratě 8 znaků" })
+    .max(255, { message: "Musi být měně než 255 znaků" }),
+});
 
 export function PasswordUpdateForm() {
   const form = useForm<z.infer<typeof formSchemaPassword>>({
@@ -34,40 +35,48 @@ export function PasswordUpdateForm() {
 
   const history = useHistory();
 
-
   async function onSubmit(values: z.infer<typeof formSchemaPassword>) {
     console.log(values);
-      let token = null;
-      try {
-        const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      const password = await CapacitorHttp.request({
-        method: "POST",
-        url: `${api_url}/api/auth/settings/update-password`,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization-Session": token?.value ?? "",
-        },
-        data: JSON.stringify({
-          password: values.password,
-          newPassword: values.newPassword,
-        }),
-      });
-      const passwordResponse = await password.data;
-      if (passwordResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-      if (passwordResponse.success) {
-        const keys = await SecureStoragePlugin.keys();
-        keys.value.includes(sessionName) && await SecureStoragePlugin.remove({ key: sessionName });
-        await SecureStoragePlugin.set({ key: sessionName, value: passwordResponse.sessionToken });
-        if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
-        console.log("Success", passwordResponse);
-        return history.push("/auth/settings");
-      }
-      if (passwordResponse.redirect) return history.push(passwordResponse.redirect);
+    let token = null;
+    try {
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(sessionName)
+        ? await SecureStoragePlugin.get({ key: sessionName })
+        : null;
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
+    const password = await CapacitorHttp.request({
+      method: "POST",
+      url: `${api_url}/api/auth/settings/update-password`,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization-Session": token?.value ?? "",
+      },
+      data: JSON.stringify({
+        password: values.password,
+        newPassword: values.newPassword,
+      }),
+    });
+    const passwordResponse = await password.data;
+    if (passwordResponse?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
+    if (passwordResponse.success) {
+      const keys = await SecureStoragePlugin.keys();
+      keys.value.includes(sessionName) &&
+        (await SecureStoragePlugin.remove({ key: sessionName }));
+      await SecureStoragePlugin.set({
+        key: sessionName,
+        value: passwordResponse.sessionToken,
+      });
+      if (passwordResponse.redirect)
+        return history.push(passwordResponse.redirect);
+      console.log("Success", passwordResponse);
+      return history.push("/auth/settings");
+    }
+    if (passwordResponse.redirect)
+      return history.push(passwordResponse.redirect);
+  }
 
   return (
     <Form {...form}>
@@ -80,7 +89,7 @@ export function PasswordUpdateForm() {
             <Input type="password" value={field.value} {...field} />
           )}
         />
-         <CustomFieldPassword
+        <CustomFieldPassword
           control={form.control}
           name="newPassword"
           formLabel={"New Password"}
@@ -97,7 +106,7 @@ export function EmailUpdateForm() {
   const form = useForm<z.infer<typeof formSchemaEmail>>({
     resolver: zodResolver(formSchemaEmail),
     defaultValues: {
-      email: "",      
+      email: "",
     },
   });
 
@@ -105,47 +114,54 @@ export function EmailUpdateForm() {
 
   async function onSubmit(values: z.infer<typeof formSchemaEmail>) {
     console.log(values);
-      let token = null;
-      try {
-        const keys = await SecureStoragePlugin.keys();
-        token = keys.value.includes(sessionName) ? await SecureStoragePlugin.get({ key: sessionName }) : null;
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      const email = await CapacitorHttp.request({
-        method: "POST",
-        url: `${api_url}/api/auth/settings/update-email`,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization-Session": token?.value ?? "",
-        },
-        data: JSON.stringify({
-          email: values.email,
-        }),
-      });
-      const emailResponse = await email.data;
-    if (emailResponse?.error === "UNAUTHORIZED") await SecureStoragePlugin.clear();
-      if (emailResponse.success) {
-        console.log("Success", emailResponse);
-        const keys = await SecureStoragePlugin.keys();
-        keys.value.includes(emailName) && await SecureStoragePlugin.remove({ key: emailName });
-        await SecureStoragePlugin.set({ key: emailName, value: emailResponse.emailVerificationRequestId });
-        if (emailResponse.redirect) return history.push(emailResponse.redirect);
-        return history.push("/auth/settings");
-      }
+    let token = null;
+    try {
+      const keys = await SecureStoragePlugin.keys();
+      token = keys.value.includes(sessionName)
+        ? await SecureStoragePlugin.get({ key: sessionName })
+        : null;
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
+    const email = await CapacitorHttp.request({
+      method: "POST",
+      url: `${api_url}/api/auth/settings/update-email`,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization-Session": token?.value ?? "",
+      },
+      data: JSON.stringify({
+        email: values.email,
+      }),
+    });
+    const emailResponse = await email.data;
+    if (emailResponse?.error === "UNAUTHORIZED")
+      await SecureStoragePlugin.clear();
+    if (emailResponse.success) {
+      console.log("Success", emailResponse);
+      const keys = await SecureStoragePlugin.keys();
+      keys.value.includes(emailName) &&
+        (await SecureStoragePlugin.remove({ key: emailName }));
+      await SecureStoragePlugin.set({
+        key: emailName,
+        value: emailResponse.emailVerificationRequestId,
+      });
+      if (emailResponse.redirect) return history.push(emailResponse.redirect);
+      return history.push("/auth/settings");
+    }
+  }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <CustomFieldEmail
-            control={form.control}
-            name="email"
-            formLabel={"Email"}
-            render={({ field }) => (
-              <Input type="email" value={field.value} {...field} />
-            )}
-          />
+        <CustomFieldEmail
+          control={form.control}
+          name="email"
+          formLabel={"Email"}
+          render={({ field }) => (
+            <Input type="email" value={field.value} {...field} />
+          )}
+        />
         <Button type="submit">Submit</Button>
       </form>
     </Form>
