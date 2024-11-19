@@ -1,3 +1,4 @@
+import React from "react";
 import {
   IonIcon,
   IonLabel,
@@ -6,11 +7,12 @@ import {
   IonTabButton,
   IonTabs,
 } from "@ionic/react";
-import React from "react";
-import { ellipse, square, triangle } from "ionicons/icons";
+import { triangle } from "ionicons/icons";
 import { Route } from "react-router";
 import RequestsTab from "@/pages/dendrologic/RequestsTab";
 import AccountTab from "@/pages/auth/AccountTab";
+import GlobalMapPage from "@/pages/dendrologic/GlobalMapPage";
+import { Globe, User } from "lucide-react";
 
 export default function MainTabs() {
   return (
@@ -19,7 +21,9 @@ export default function MainTabs() {
         <Route exact path="/main/requests">
           <RequestsTab />
         </Route>
-        <Route exact path="/main/tab2"></Route>
+        <Route exact path="/main/global-requests">
+          <GlobalMapPage />
+        </Route>
         <Route exact path="/main/account">
           <AccountTab />
         </Route>
@@ -29,12 +33,12 @@ export default function MainTabs() {
           <IonIcon aria-hidden="true" icon={triangle} />
           <IonLabel>Requests</IonLabel>
         </IonTabButton>
-        <IonTabButton tab="tab2" href="/main/tab2">
-          <IonIcon aria-hidden="true" icon={ellipse} />
+        <IonTabButton tab="tab2" href="/main/global-requests">
+          <Globe aria-hidden="true" />
           <IonLabel>Global main</IonLabel>
         </IonTabButton>
         <IonTabButton tab="tab3" href="/main/account">
-          <IonIcon aria-hidden="true" icon={square} />
+          <User />
           <IonLabel>Account</IonLabel>
         </IonTabButton>
       </IonTabBar>

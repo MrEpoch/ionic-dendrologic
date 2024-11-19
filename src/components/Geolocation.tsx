@@ -138,20 +138,12 @@ export default function GeoLocationComponent({
       {/*
     {GPSenabledRef.current && location && (
   */}
-      <MapContainer
-        className="map-container"
-        zoom={5}
-        center={[10.0, 10.0]}
-      >
+      <MapContainer className="map-container" zoom={5} center={[10.0, 10.0]}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {geoJSONdata && (
-          <GeoJSON
-            data={geoJSONdata}
-          ></GeoJSON>
-        )}
+        {geoJSONdata && <GeoJSON data={geoJSONdata}></GeoJSON>}
       </MapContainer>
       {/*
       )}

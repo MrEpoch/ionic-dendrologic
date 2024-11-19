@@ -86,7 +86,7 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({ match }) => {
       <DendrologicDetailInfo shown={mapShown} info={data} />
     */}
       <OpenLayers geoJSONData={data?.geojson} />
-    {/*
+      {/*
       <GeoLocationComponent
         updateShown={updateShown}
         shown={mapShown}

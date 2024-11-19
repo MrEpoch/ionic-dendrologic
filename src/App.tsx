@@ -43,7 +43,7 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         <Route exact path="/">
-          <Redirect to="/main/requests" />
+          <Redirect to="/main/global-requests" />
         </Route>
         <Route path="/main" component={MainTabs} />
         <Route path="/map-requests" component={GeoTabs} />
