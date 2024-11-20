@@ -28,8 +28,7 @@ export function usePhotoGallery() {
   const savePicture = async (
     photo: Photo,
     fileName: string,
-    geoRequestId: string,
-    featureId: string,
+    kod: string,
   ): Promise<UserPhoto | null> => {
     let base64Data: string = photo.base64String as string;
 
@@ -47,7 +46,7 @@ export function usePhotoGallery() {
 
     const imageJson = {
       image: photo.base64String as string,
-      featureId: featureId,
+      kod: kod.toString(),
     };
 
     try {
@@ -61,11 +60,9 @@ export function usePhotoGallery() {
         console.error("Error fetching data:", error);
       }
 
-      console.log("took photo");
-
       const res = await CapacitorHttp.post({
         //url: "https://dendrologic-web.stencukpage.com/api/images",
-        url: `${api_url}/api/images/` + geoRequestId,
+        url: `${api_url}/api/images`,
         data: imageJson,
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +98,7 @@ export function usePhotoGallery() {
     }
   };
 
-  const takePhoto = async (geoRequestId, featureId) => {
+  const takePhoto = async (kod: string) => {
     const photo = await Camera.getPhoto({
       resultType: CameraResultType.Base64,
       saveToGallery: true,
@@ -110,12 +107,7 @@ export function usePhotoGallery() {
     });
 
     const fileName = Date.now() + ".jpeg";
-    const savedFileImage = await savePicture(
-      photo,
-      fileName,
-      geoRequestId,
-      featureId,
-    );
+    const savedFileImage = await savePicture(photo, fileName, kod);
     if (!savedFileImage) {
       return false;
     }

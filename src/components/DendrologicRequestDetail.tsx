@@ -6,7 +6,7 @@ import DendrologicInfoModal from "./DendrologicInfoModal";
 import { CapacitorHttp } from "@capacitor/core";
 import { api_url } from "@/lib/config";
 import geoJsonData from "../assets/stromy.json";
-import OpenLayers from "./openLayers";
+import OpenLayers from "./OpenLayers";
 
 const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({ match }) => {
   const zodValidateId = z.string().length(36);

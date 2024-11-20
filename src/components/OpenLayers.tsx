@@ -8,12 +8,13 @@ import { OSM, Vector as VectorSource } from "ol/source.js";
 import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer.js";
 import { click } from "ol/events/condition.js";
 import Select from "ol/interaction/Select.js";
+import DendrologicModal from "./dendrologic/DendrologicModal";
 
 export default function OpenLayers({ geoJSONData }) {
   const image = new CircleStyle({
     radius: 5,
     fill: null,
-    stroke: new Stroke({ color: "red", width: 1 }),
+    stroke: new Stroke({ color: "blue", width: 11 }),
   });
 
   const styles = {
@@ -75,7 +76,7 @@ export default function OpenLayers({ geoJSONData }) {
     }),
     Circle: new Style({
       stroke: new Stroke({
-        color: "red",
+        color: "blue",
         width: 2,
       }),
       fill: new Fill({
@@ -87,6 +88,10 @@ export default function OpenLayers({ geoJSONData }) {
   const styleFunction = function (feature) {
     return styles[feature.getGeometry().getType()];
   };
+
+  const [selectedFeature, setSelectedFeature] = React.useState<null | any>(
+    null,
+  );
 
   useEffect(() => {
     const vectorSource = new VectorSource({
@@ -122,11 +127,23 @@ export default function OpenLayers({ geoJSONData }) {
     });
     map.addInteraction(selectClick);
     selectClick.on("select", function (e) {
+      setSelectedFeature(e?.selected[0]?.getProperties());
       console.log(e, "hello");
     });
   }, [geoJSONData]);
+
+  function selectedFeatureToNull() {
+    setSelectedFeature(null);
+  }
+
   return (
-    <div className="w-full min-h-screen" id="map">
-    </div>
+    <>
+      <div className="w-full min-h-screen" id="map">
+        <DendrologicModal
+          close={selectedFeatureToNull}
+          selectedFeature={selectedFeature}
+        />
+      </div>
+    </>
   );
 }
