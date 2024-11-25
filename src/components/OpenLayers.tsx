@@ -9,6 +9,8 @@ import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer.js";
 import { click } from "ol/events/condition.js";
 import Select from "ol/interaction/Select.js";
 import DendrologicModal from "./dendrologic/DendrologicModal";
+import { simplify } from "@turf/turf";
+import Cluster from "ol/source/Cluster";
 
 export default function OpenLayers({ geoJSONData }) {
   const image = new CircleStyle({
@@ -97,14 +99,20 @@ export default function OpenLayers({ geoJSONData }) {
     const vectorSource = new VectorSource({
       features: new GeoJSON({
         featureProjection: "EPSG:3857",
-      }).readFeatures(geoJSONData, {
-        dataProjection: "EPSG:4326",
-        featureProjection: "EPSG:3857",
-      }),
+      }).readFeatures(
+        simplify(geoJSONData, { tolerance: 0.01, highQuality: false }),
+        {
+          dataProjection: "EPSG:4326",
+          featureProjection: "EPSG:3857",
+        },
+      ),
     });
 
     const vectorLayer = new VectorLayer({
-      source: vectorSource,
+      source: new Cluster({
+        distance: 40,
+        source: vectorSource,
+      }),
       style: styleFunction,
     });
     console.log(geoJSONData.features[0]);
