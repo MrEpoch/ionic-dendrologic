@@ -10,9 +10,6 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-import { Geolocation, Position } from "@capacitor/geolocation";
-import { Dialog } from "@capacitor/dialog";
-
 function AnimatedPanningElement() {
   const map = useMapEvent("click", (e: unknown) => {
     map.setView(e.latlng, map.getZoom(), {

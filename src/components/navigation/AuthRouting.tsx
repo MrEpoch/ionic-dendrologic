@@ -11,6 +11,7 @@ import ResetPasswordVerifyEmailPage from "@/pages/auth/ResetPasswordVerifyEmail"
 import ForgotPasswordPage from "@/pages/auth/ForgotPassword";
 import {
   IonButtons,
+  IonContent,
   IonHeader,
   IonPage,
   IonRouterOutlet,
@@ -33,59 +34,77 @@ export default function AuthRouting() {
         </IonToolbar>
       </IonHeader>
       <IonRouterOutlet>
-        <Route key={Math.random() * Math.random()} exact path="/auth/login">
-          <LoginPage />
-        </Route>
-        <Route key={Math.random() * Math.random()} exact path="/auth/register">
-          <RegisterPage />
-        </Route>
-        <Route key={Math.random() * Math.random()} exact path="/auth/settings">
-          <SettingsPage />
-        </Route>
-        <Route
-          key={Math.random() * Math.random()}
-          exact
-          path="/auth/verify-email"
-        >
-          <VerifyEmailPage />
-        </Route>
-        <Route
-          key={Math.random() * Math.random()}
-          exact
-          path="/auth/reset-password"
-        >
-          <ResetPasswordPage />
-        </Route>
-        <Route
-          key={Math.random() * Math.random()}
-          exact
-          path="/auth/reset-password/2fa"
-        >
-          <ResetPassword2faPage />
-        </Route>
-        <Route
-          key={Math.random() * Math.random()}
-          exact
-          path="/auth/reset-password/verify-email"
-        >
-          <ResetPasswordVerifyEmailPage />
-        </Route>
-        <Route
-          key={Math.random() * Math.random()}
-          exact
-          path="/auth/forgot-password"
-        >
-          <ForgotPasswordPage />
-        </Route>
-        <Route key={Math.random() * Math.random()} exact path="/auth/2fa">
-          <TwoFactorVerify />
-        </Route>
-        <Route key={Math.random() * Math.random()} exact path="/auth/2fa/setup">
-          <TwoFactorSetup />
-        </Route>
-        <Route key={Math.random() * Math.random()} exact path="/auth/2fa/reset">
-          <TwoFactorReset />
-        </Route>
+        <IonContent>
+          <Route key={Math.random() * Math.random()} exact path="/auth/login">
+            <LoginPage />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/register"
+          >
+            <RegisterPage />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/settings"
+          >
+            <SettingsPage />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/verify-email"
+          >
+            <VerifyEmailPage />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/reset-password"
+          >
+            <ResetPasswordPage />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/reset-password/2fa"
+          >
+            <ResetPassword2faPage />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/reset-password/verify-email"
+          >
+            <ResetPasswordVerifyEmailPage />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/forgot-password"
+          >
+            <ForgotPasswordPage />
+          </Route>
+          <Route key={Math.random() * Math.random()} exact path="/auth/2fa">
+            <TwoFactorVerify />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/2fa/setup"
+          >
+            <TwoFactorSetup />
+          </Route>
+          <Route
+            key={Math.random() * Math.random()}
+            exact
+            path="/auth/2fa/reset"
+          >
+            <TwoFactorReset />
+          </Route>
+        </IonContent>
       </IonRouterOutlet>
     </IonPage>
   );

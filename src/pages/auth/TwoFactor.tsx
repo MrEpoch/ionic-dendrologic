@@ -57,7 +57,7 @@ export default function Page() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background items-center h-full w-full">
+    <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background py-16 pt-96 items-center p-4 h-96 w-full">
       <h1>Two-factor authentication</h1>
       <p>Enter the code from your authenticator app.</p>
       <TwoFactorVerificationForm />
