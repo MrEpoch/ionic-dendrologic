@@ -9,6 +9,8 @@ import { User } from "@/types";
 import { CapacitorHttp } from "@capacitor/core";
 import { api_url, sessionName } from "@/lib/config";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
+import { Cog, House } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -67,31 +69,46 @@ export default function Page() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background py-16 pt-96 items-center p-4 h-96 w-full">
-      <header>
-        <Link to="/">Home</Link>
-        <Link to="/auth/settings">Settings</Link>
-      </header>
-      <main>
-        <h1>Settings</h1>
-        <section>
-          <h2>Update email</h2>
+    <div className="h-full flex gap-4 flex-col justify-center dark:bg-background bg-background py-16 pt-96 items-center p-4 w-full">
+      <main className="min-h-screen w-full items-center flex flex-col gap-8">
+        <h1 className="text-3xl font-bold">Settings</h1>
+        <section className="flex flex-col gap-4 max-w-md w-full">
+          <div className="bg-gray-600 rounded w-full h-1" />
+          <h2 className="text-2xl font-semibold">Update email</h2>
           <p>Your email: {user?.email}</p>
           <EmailUpdateForm />
         </section>
-        <section>
-          <h2>Update password</h2>
+        <section className="flex flex-col gap-4 max-w-md w-full">
+          <div className="bg-gray-600 rounded w-full h-1" />
+          <h2 className="text-2xl font-semibold">Update password</h2>
           <PasswordUpdateForm />
         </section>
         {user?.registered2FA && (
-          <section>
-            <h2>Update two-factor authentication</h2>
-            <Link to="/auth/2fa/setup">Update</Link>
+          <section className="flex flex-col gap-4 max-w-md w-full">
+            <div className="bg-gray-600 rounded w-full h-1" />
+            <h2 className="text-2xl font-semibold">Update two-factor authentication</h2>
+            <Link to="/auth/2fa/setup">
+              <Button>
+                Update
+              </Button>
+            </Link>
           </section>
         )}
+        <div className="bg-gray-600 rounded max-w-md w-full h-1" />
         {recoveryCode !== null && (
           <RecoveryCodeForm recoveryCode={recoveryCode} />
         )}
+      <footer className="flex gap-2 w-full justify-between items-center">
+        <Link className="justify-self flex p-4 gap-2 hover:underline" to="/">
+          <House />
+          <span>Home</span>
+        </Link>
+          <Link className="justify-self flex p-4 gap-2 hover:underline" to="/auth/settings">
+          <Cog />
+          <span>Settings</span>
+        </Link>
+      </footer>
+
       </main>
     </div>
   );

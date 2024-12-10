@@ -10,7 +10,7 @@ import { api_url, emailName, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { errorHandler } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const formSchema = z
   .object({
@@ -55,9 +55,11 @@ export function AuthForm({
   });
 
   const history = useHistory();
+  const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setError(null);
       if (authType === "register") {
         const user = await CapacitorHttp.request({
           method: "POST",
@@ -89,12 +91,22 @@ export function AuthForm({
           if (userResponse.redirect) return history.push(userResponse.redirect);
           return history.push("/auth/2fa/setup");
         } else {
-          if (userResponse?.error === "UNAUTHORIZED")
+          if (userResponse?.error === "UNAUTHORIZED") {
             await SecureStoragePlugin.clear();
+            setError("Zákaz registrace");
+          }
+          switch (userResponse?.error) {
+            case "WEAK_PASSWORD":
+              return setError("Heslo je měně než 8 znaků");
+            case "BAD_REQUEST":
+              return setError("Koruptovaná data.");
+            case "TOO_MANY_REQUESTS":
+              return setError("Byl překročen počet požadavků pro danou IP adresu.");
+          }
           if (userResponse.redirect) return history.push(userResponse.redirect);
-          return history.push("/auth/register");
         }
       } else {
+        console.log("send");
         const user = await CapacitorHttp.request({
           method: "POST",
           url: `${api_url}/api/auth/login`,
@@ -107,6 +119,7 @@ export function AuthForm({
           }),
         });
         const userResponse = await user.data;
+        console.log(userResponse);
         if (userResponse.success) {
           // Checks if session exists, otherwise delates it
 
@@ -131,12 +144,19 @@ export function AuthForm({
         } else {
           // Error handler
 
-          if (userResponse?.error === "UNAUTHORIZED")
-            await SecureStoragePlugin.clear();
-          if (userResponse.redirect) {
-            return history.push(userResponse.redirect);
+          switch (userResponse?.error) {
+            case "UNAUTHORIZED":
+              await SecureStoragePlugin.clear();
+              return setError("Nesprávné přihlašující údaje.");
+            case "BAD_REQUEST":
+              setError("Koruptovaná data.");
+              if (userResponse.redirect) {
+                return history.push(userResponse.redirect);
+              }
+              return history.push("/auth/login");
+            case "TOO_MANY_REQUESTS":
+              return setError("Byl překročen počet požadavků pro danou IP adresu.");
           }
-          return history.push("/auth/login");
         }
       }
     } catch (e) {
@@ -151,7 +171,7 @@ export function AuthForm({
           <CustomField
             control={form.control}
             name="username"
-            formLabel={"Username"}
+            formLabel={"Username (min 3 characters) *"}
             render={({ field }) => (
               <Input type="text" value={field.value} {...field} />
             )}
@@ -168,7 +188,7 @@ export function AuthForm({
         <CustomField
           control={form.control}
           name="password"
-          formLabel={"password"}
+          formLabel={"Password (min 8 characters, must be strong)"}
           render={({ field }) => (
             <Input type="password" value={field.value} {...field} />
           )}
@@ -177,7 +197,7 @@ export function AuthForm({
           <CustomField
             control={form.control}
             name="passwordConfirm"
-            formLabel={"password confirm"}
+            formLabel={"Password confirm"}
             render={({ field }) => (
               <Input type="password" value={field.value} {...field} />
             )}
@@ -185,6 +205,11 @@ export function AuthForm({
         )}
         <Button type="submit">Submit</Button>
       </form>
+      {error &&
+      <p className="text-center text-red-600">
+        {error}
+      </p>
+      }
     </Form>
   );
 }

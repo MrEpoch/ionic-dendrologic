@@ -122,18 +122,32 @@ function ItemModal({ modal, selectedFeature }) {
 }
 
 function ScrollModal({ features, selectFeature }) {
-  console.log(features);
+
+  const [loadedFeatures, setLoadedFeatures] = useState<null | any>(features.slice(0, 20));
+
   return (
     <IonContent className="ion-padding">
-      {features?.map((feature, i) => (
-        <IonItem
-          key={i}
-          onClick={() => {
-            selectFeature(feature);
-          }}
-        >
-          {feature.values_.NAZEV} - {feature.values_.KOD}
-        </IonItem>
+      {loadedFeatures.map((feature, i) => (
+        <div key={i}>
+          <IonItem
+            onClick={() => {
+              selectFeature(feature);
+            }}
+          >
+            {feature.values_.NAZEV} - {feature.values_.KOD}
+          </IonItem>
+          {(loadedFeatures.length - 1 === i && features.length > loadedFeatures.length) && (
+            <div className="p-4 w-full flex items-center justify-center">
+            <IonButton
+              onClick={() => {
+                setLoadedFeatures([...loadedFeatures, ...features.slice(loadedFeatures.length, loadedFeatures.length + 20)]);
+              }}
+            >
+              Zobrazit další
+            </IonButton>
+            </div>
+          )}
+        </div>
       ))}
     </IonContent>
   );

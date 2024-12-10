@@ -39,7 +39,7 @@ import AuthRouting from "./components/navigation/AuthRouting";
 setupIonicReact();
 
 const App: React.FC = () => (
-  <IonApp>
+  <IonApp className="font-mono">
     <IonReactRouter>
       <IonRouterOutlet>
         <Route exact path="/">

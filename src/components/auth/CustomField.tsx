@@ -31,7 +31,7 @@ export default function CustomField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={className}>
+        <FormItem className={className + " max-w-xs"}>
           {formLabel && <FormLabel>{formLabel}</FormLabel>}
           <FormControl>{render({ field })}</FormControl>
         </FormItem>
@@ -60,7 +60,7 @@ export function CustomFieldEmail({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={className}>
+        <FormItem className={className + " max-w-xs"}>
           {formLabel && <FormLabel>{formLabel}</FormLabel>}
           <FormControl>{render({ field })}</FormControl>
         </FormItem>
@@ -89,7 +89,7 @@ export function CustomFieldPassword({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={className}>
+        <FormItem className={className + " max-w-xs"}>
           {formLabel && <FormLabel>{formLabel}</FormLabel>}
           <FormControl>{render({ field })}</FormControl>
         </FormItem>
@@ -118,7 +118,7 @@ export function CustomFieldCode({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={className}>
+        <FormItem className={className + " max-w-xs"}>
           {formLabel && <FormLabel>{formLabel}</FormLabel>}
           <FormControl>{render({ field })}</FormControl>
         </FormItem>

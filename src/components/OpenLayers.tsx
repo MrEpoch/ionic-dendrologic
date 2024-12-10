@@ -11,6 +11,7 @@ import Select from "ol/interaction/Select.js";
 import DendrologicModal from "./dendrologic/DendrologicModal";
 import { simplify } from "@turf/turf";
 import Cluster from "ol/source/Cluster";
+import { transform } from "ol/proj";
 
 export default function OpenLayers({ geoJSONData }) {
   const image = new CircleStyle({
@@ -115,8 +116,6 @@ export default function OpenLayers({ geoJSONData }) {
       }),
       style: styleFunction,
     });
-    console.log(geoJSONData.features[0]);
-    console.log(vectorSource.getFeatures()[0]);
     const map = new Map({
       target: "map",
       layers: [
@@ -126,8 +125,8 @@ export default function OpenLayers({ geoJSONData }) {
         vectorLayer,
       ],
       view: new View({
-        center: [0, 0],
-        zoom: 2,
+        center: transform([15.243629268374999, 49.272716766783859], 'EPSG:4326', 'EPSG:3857'),
+        zoom: 7,
       }),
     });
     const selectClick = new Select({
@@ -136,7 +135,7 @@ export default function OpenLayers({ geoJSONData }) {
     map.addInteraction(selectClick);
     selectClick.on("select", function (e) {
       setSelectedFeature(e?.selected[0]?.getProperties());
-      console.log(e, "hello");
+      console.log(e, "hello", e?.selected[0]);
     });
   }, [geoJSONData]);
 

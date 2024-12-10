@@ -41,7 +41,7 @@ export function RecoveryCodeForm({ recoveryCode }) {
       <h2>Recovery code</h2>
       <p>{recoveryCodeState}</p>
       <form className="space-y-8">
-        <Button onClick={onSubmit} type="button">
+        <Button onClick={onSubmit} type="submit">
           Generate new recovery code
         </Button>
       </form>
