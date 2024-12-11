@@ -86,11 +86,8 @@ export default function Page() {
         {user?.registered2FA && (
           <section className="flex flex-col gap-4 max-w-md w-full">
             <div className="bg-gray-600 rounded w-full h-1" />
-            <h2 className="text-2xl font-semibold">Update two-factor authentication</h2>
             <Link to="/auth/2fa/setup">
-              <Button>
-                Update
-              </Button>
+              <Button>Update two-factor auth</Button>
             </Link>
           </section>
         )}
@@ -98,17 +95,19 @@ export default function Page() {
         {recoveryCode !== null && (
           <RecoveryCodeForm recoveryCode={recoveryCode} />
         )}
-      <footer className="flex gap-2 w-full justify-between items-center">
-        <Link className="justify-self flex p-4 gap-2 hover:underline" to="/">
-          <House />
-          <span>Home</span>
-        </Link>
-          <Link className="justify-self flex p-4 gap-2 hover:underline" to="/auth/settings">
-          <Cog />
-          <span>Settings</span>
-        </Link>
-      </footer>
-
+        <footer className="flex gap-2 w-full justify-between items-center">
+          <Link className="justify-self flex p-4 gap-2 hover:underline" to="/">
+            <House />
+            <span>Home</span>
+          </Link>
+          <Link
+            className="justify-self flex p-4 gap-2 hover:underline"
+            to="/auth/settings"
+          >
+            <Cog />
+            <span>Settings</span>
+          </Link>
+        </footer>
       </main>
     </div>
   );

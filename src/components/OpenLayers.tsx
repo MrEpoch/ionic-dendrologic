@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import Map from "ol/Map.js";
-import View from "ol/View.js";
+import React, { useEffect, useState } from "react";
+import { simplify } from "@turf/turf";
 import "./Geolocation.css";
+
 import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style.js";
 import GeoJSON from "ol/format/GeoJSON.js";
 import { OSM, Vector as VectorSource } from "ol/source.js";
@@ -9,15 +9,23 @@ import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer.js";
 import { click } from "ol/events/condition.js";
 import Select from "ol/interaction/Select.js";
 import DendrologicModal from "./dendrologic/DendrologicModal";
-import { simplify } from "@turf/turf";
 import Cluster from "ol/source/Cluster";
 import { transform } from "ol/proj";
+import Map from "ol/Map.js";
+import View from "ol/View.js";
+import DendrologicSearch from "./dendrologic/DendrologicSearch";
 
 export default function OpenLayers({ geoJSONData }) {
+  const [selectEvent, setSelectEvent] = useState<null | Select>(null);
+  const [selected, setSelected] = useState<null | any>(null);
+
+  function selectFeature(feature) {
+    setSelected(feature);
+  }
+
   const image = new CircleStyle({
     radius: 5,
-    fill: null,
-    stroke: new Stroke({ color: "blue", width: 11 }),
+    stroke: new Stroke({ color: "#0D2617", width: 11 }),
   });
 
   const styles = {
@@ -53,7 +61,7 @@ export default function OpenLayers({ geoJSONData }) {
     }),
     Polygon: new Style({
       stroke: new Stroke({
-        color: "blue",
+        color: "green",
         lineDash: [4],
         width: 3,
       }),
@@ -63,23 +71,22 @@ export default function OpenLayers({ geoJSONData }) {
     }),
     GeometryCollection: new Style({
       stroke: new Stroke({
-        color: "magenta",
+        color: "green",
         width: 2,
       }),
       fill: new Fill({
-        color: "magenta",
+        color: "green",
       }),
       image: new CircleStyle({
         radius: 10,
-        fill: null,
         stroke: new Stroke({
-          color: "magenta",
+          color: "green",
         }),
       }),
     }),
     Circle: new Style({
       stroke: new Stroke({
-        color: "blue",
+        color: "green",
         width: 2,
       }),
       fill: new Fill({
@@ -125,7 +132,11 @@ export default function OpenLayers({ geoJSONData }) {
         vectorLayer,
       ],
       view: new View({
-        center: transform([15.243629268374999, 49.272716766783859], 'EPSG:4326', 'EPSG:3857'),
+        center: transform(
+          [15.243629268374999, 49.272716766783859],
+          "EPSG:4326",
+          "EPSG:3857",
+        ),
         zoom: 7,
       }),
     });
@@ -134,19 +145,29 @@ export default function OpenLayers({ geoJSONData }) {
     });
     map.addInteraction(selectClick);
     selectClick.on("select", function (e) {
+      e.preventDefault();
       setSelectedFeature(e?.selected[0]?.getProperties());
-      console.log(e, "hello", e?.selected[0]);
     });
+
+    setSelectEvent(selectClick);
+
+    return () => {
+      map.dispose();
+    };
   }, [geoJSONData]);
 
   function selectedFeatureToNull() {
     setSelectedFeature(null);
+    selectEvent?.getFeatures().clear();
   }
 
   return (
     <>
       <div className="w-full min-h-screen" id="map">
+        <DendrologicSearch selected={selected} selectFeature={selectFeature} geoJSONData={geoJSONData} />
         <DendrologicModal
+    selectFeature={selectFeature}
+    selected={selected}
           close={selectedFeatureToNull}
           selectedFeature={selectedFeature}
         />

@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    IonContent,
+  IonContent,
   IonIcon,
   IonLabel,
   IonPage,

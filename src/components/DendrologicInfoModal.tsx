@@ -18,6 +18,7 @@ export default function DendrologicInfoModal({
 }) {
   const modal = useRef<HTMLIonModalElement>(null);
   const { takePhoto } = usePhotoGallery();
+  console.log("here");
 
   return (
     <IonModal
@@ -26,8 +27,8 @@ export default function DendrologicInfoModal({
       initialBreakpoint={0.25}
       breakpoints={[0, 0.25, 0.5, 0.75, 1]}
     >
-      <IonContent className="ion-padding">
-        <div className="flex justify-center gap-4 w-full items-center">
+      <div className="p-4 rounded">
+        <div className="flex rounded justify-center gap-4 w-full items-center">
           <IonFabButton
             onClick={async () => {
               const res = await takePhoto(info?.id, selectedFeature?.id);
@@ -48,7 +49,7 @@ export default function DendrologicInfoModal({
               src={"https://minio.stencukpage.com/dendrologic-bucket/" + image}
             />
           ))}
-      </IonContent>
+      </div>
     </IonModal>
   );
 }

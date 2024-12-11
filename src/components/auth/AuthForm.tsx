@@ -101,7 +101,9 @@ export function AuthForm({
             case "BAD_REQUEST":
               return setError("Koruptovaná data.");
             case "TOO_MANY_REQUESTS":
-              return setError("Byl překročen počet požadavků pro danou IP adresu.");
+              return setError(
+                "Byl překročen počet požadavků pro danou IP adresu.",
+              );
           }
           if (userResponse.redirect) return history.push(userResponse.redirect);
         }
@@ -155,7 +157,9 @@ export function AuthForm({
               }
               return history.push("/auth/login");
             case "TOO_MANY_REQUESTS":
-              return setError("Byl překročen počet požadavků pro danou IP adresu.");
+              return setError(
+                "Byl překročen počet požadavků pro danou IP adresu.",
+              );
           }
         }
       }
@@ -205,11 +209,7 @@ export function AuthForm({
         )}
         <Button type="submit">Submit</Button>
       </form>
-      {error &&
-      <p className="text-center text-red-600">
-        {error}
-      </p>
-      }
+      {error && <p className="text-center text-red-600">{error}</p>}
     </Form>
   );
 }

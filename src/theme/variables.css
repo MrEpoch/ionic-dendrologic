@@ -1,6 +1,6 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
-
+@import "../../node_modules/ol/ol.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
