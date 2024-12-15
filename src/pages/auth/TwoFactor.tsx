@@ -1,4 +1,5 @@
 import { TwoFactorVerificationForm } from "@/components/auth/TwoFactorSetUpForm";
+import Loading from "@/components/Loading";
 import { api_url, sessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
@@ -54,7 +55,7 @@ export default function Page() {
     }
   }, [history]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
 
   return (
     <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background py-16 pt-96 items-center p-4 h-96 w-full">

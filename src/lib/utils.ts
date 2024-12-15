@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function truncateString(
   str: string,
-  maxLen: number,
+  maxLen: number
 ): {
   value: string;
   isTruncated: boolean;

@@ -1,4 +1,5 @@
 import { PasswordResetForm } from "@/components/auth/PasswordResetForm";
+import Loading from "@/components/Loading";
 import { api_url, passwordResetSessionName } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
 import { IonContent } from "@ionic/react";
@@ -56,7 +57,7 @@ export default function Page() {
     }
   }, [history]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   return (
     <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background py-16 pt-96 items-center p-4 h-96 w-full">
       <h1>Enter your new password</h1>

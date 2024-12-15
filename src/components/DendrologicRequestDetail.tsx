@@ -7,6 +7,7 @@ import { CapacitorHttp } from "@capacitor/core";
 import { api_url } from "@/lib/config";
 import geoJsonData from "../assets/stromy.json";
 import OpenLayers from "./OpenLayers";
+import Loading from "./Loading";
 
 const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({ match }) => {
   const zodValidateId = z.string().length(36);
@@ -73,7 +74,7 @@ const DendrologicRequestDetail: React.FC<RouteComponentProps> = ({ match }) => {
     }
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
 
   return (
     <>

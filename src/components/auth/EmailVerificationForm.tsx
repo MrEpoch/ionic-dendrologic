@@ -80,6 +80,7 @@ export function EmailVerificationForm() {
         id="form-verify.code"
         required
         pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+        inputMode="text"
         maxLength={8}
         value={code}
         onChange={(value) => setCode(value)}

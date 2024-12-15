@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import { TwoFactorSetUpForm } from "@/components/auth/TwoFactorSetUpForm";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import Copy2FACodeToClipboard from "@/components/auth/Copy2FACodeToClipboard";
+import Loading from "@/components/Loading";
 
 export default function Page() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -66,7 +67,7 @@ export default function Page() {
     };
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
 
   return (
     <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background py-16 pt-96 items-center p-4 h-96 w-full">

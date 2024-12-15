@@ -3,6 +3,7 @@ import { IonItem, IonList } from "@ionic/react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { api_url } from "@/lib/config";
+import Loading from "../Loading";
 
 interface GeoRequest {
   id: string;
@@ -52,7 +53,7 @@ const DendrologicRequests = () => {
     }
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
 
   return (
     <>

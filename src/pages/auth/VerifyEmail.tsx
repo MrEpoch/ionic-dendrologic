@@ -1,4 +1,5 @@
 import { EmailVerificationForm } from "@/components/auth/EmailVerificationForm";
+import Loading from "@/components/Loading";
 import { api_url, emailName, sessionName } from "@/lib/config";
 import { EmailVerificationRequest, User } from "@/types";
 import { CapacitorHttp } from "@capacitor/core";
@@ -43,14 +44,19 @@ export default function Page() {
       console.log(settings.data);
       const settingsRes = await settings.data;
       if (!settingsRes.success) {
-        if (settingsRes?.error === "UNAUTHORIZED")
+        if (settingsRes?.error === "UNAUTHORIZED") {
           await SecureStoragePlugin.clear();
+          return history.push("/auth/login");
+        }
         if (settingsRes?.error === "EXPIRED_CODE") {
           await SecureStoragePlugin.set({
             key: emailName,
             value: settingsRes.emailRequestId,
           });
-          return;
+          return history.push("/auth/verify-email");
+        }
+        if (settingsRes?.error === "EMAIL_ALREADY_VERIFIED") {
+          return history.push("/auth/settings");
         }
         if (settingsRes.redirect) return history.push(settingsRes.redirect);
       }
@@ -84,7 +90,7 @@ export default function Page() {
     }
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
 
   return (
     <div className="flex gap-4 flex-col justify-center dark:bg-background bg-background py-16 pt-96 items-center p-4 h-96 w-full">

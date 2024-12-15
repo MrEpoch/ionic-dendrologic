@@ -1,11 +1,26 @@
-import { IonButton, IonContent, IonFab, IonFabButton, IonFooter, IonItem, IonModal, IonSearchbar, IonToolbar } from "@ionic/react";
-import { Camera, Grip, Search } from "lucide-react";
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonFab,
+  IonFabButton,
+  IonFooter,
+  IonItem,
+  IonModal,
+  IonSearchbar,
+  IonToolbar,
+} from "@ionic/react";
+import { Camera, Grip, Search, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { usePhotoGallery } from "@/hooks/usePhotoGallery";
 import { api_url } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
 
-export default function DendrologicSearch({ geoJSONData, selectFeature, selected }) {
+export default function DendrologicSearch({
+  geoJSONData,
+  selectFeature,
+  selected,
+}) {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [filteredResults, setFilteredResults] = useState<any[]>([]);
   const [searchText, setSearchText] = useState<string>("");
@@ -15,9 +30,9 @@ export default function DendrologicSearch({ geoJSONData, selectFeature, selected
     const fetchData = async () => {
       if (searchText.length > 3) {
         const filtered = geoJSONData?.features.filter((feature) => {
-          return feature?.properties?.NAZEV
-            .toLowerCase()
-            .includes(searchText.toLowerCase());
+          return feature?.properties?.NAZEV.toLowerCase().includes(
+            searchText.toLowerCase()
+          );
         });
         setFilteredResults(filtered);
       } else {
@@ -39,25 +54,44 @@ export default function DendrologicSearch({ geoJSONData, selectFeature, selected
       </IonFab>
       <IonModal
         isOpen={showSearchBar}
-    onDidDismiss={() => {
-      setShowSearchBar(false)
-      setSearchText("")
-      setFilteredResults([])
-      selectFeature(null)
-    }}
+        onDidDismiss={() => {
+          setShowSearchBar(false);
+          setSearchText("");
+          setFilteredResults([]);
+          selectFeature(null);
+        }}
         ref={modal}
       >
-        <IonSearchbar debounce={500} onIonInput={(e) => {
-          setSearchText(e?.target?.value ?? "")}}></IonSearchbar>
-      {selected ? (
-        <ItemModal modal={modal} selectedFeature={selected} />
-      ) : (
-        <ScrollModal
-          selectFeature={selectFeature}
-          features={filteredResults}
-        />
-      )}
+        <IonToolbar>
+          <div className="py-2 flex justify-center items-center">
+            <IonButton
+              onClick={() => {
+                selectFeature(null);
+                setShowSearchBar(false);
+              }}
+            >
+              <X />
+            </IonButton>
+          </div>
+        </IonToolbar>
 
+        {selected ? (
+          <ItemModal modal={modal} selectedFeature={selected} />
+        ) : (
+          <>
+            <IonSearchbar
+              debounce={500}
+              onIonInput={(e) => {
+                setSearchText(e?.target?.value ?? "");
+              }}
+            ></IonSearchbar>
+
+            <ScrollModal
+              selectFeature={selectFeature}
+              features={filteredResults}
+            />
+          </>
+        )}
       </IonModal>
     </div>
   );
@@ -72,7 +106,13 @@ export function ItemModal({ modal, selectedFeature }) {
     try {
       const imageData = await CapacitorHttp.request({
         method: "GET",
-        url: `${api_url}/api/images/${selectedFeature && selectedFeature?.properties ? selectedFeature?.properties?.KOD : selectedFeature?.values_ ? selectedFeature?.values_?.KOD : ""}`,
+        url: `${api_url}/api/images/${
+          selectedFeature && selectedFeature?.properties
+            ? selectedFeature?.properties?.KOD
+            : selectedFeature?.values_
+            ? selectedFeature?.values_?.KOD
+            : ""
+        }`,
         headers: {
           "Content-Type": "application/json",
         },
@@ -123,13 +163,21 @@ export function ItemModal({ modal, selectedFeature }) {
 
           <div className="mt-4 sm:flex sm:items-center sm:justify-center sm:gap-4">
             <strong className="font-medium">
-    {selectedFeature && selectedFeature?.properties ?  selectedFeature?.properties?.NAZEV : selectedFeature?.values_ ? selectedFeature?.values_?.NAZEV : ""}
+              {selectedFeature && selectedFeature?.properties
+                ? selectedFeature?.properties?.NAZEV
+                : selectedFeature?.values_
+                ? selectedFeature?.values_?.NAZEV
+                : ""}
             </strong>
 
             <span className="hidden sm:block sm:h-px sm:w-8 sm:bg-primary"></span>
 
             <p className="mt-0.5 opacity-50 sm:mt-0">
-    {selectedFeature && selectedFeature?.properties ? selectedFeature?.properties?.KOD : selectedFeature?.values_ ? selectedFeature?.values_?.KOD : ""}
+              {selectedFeature && selectedFeature?.properties
+                ? selectedFeature?.properties?.KOD
+                : selectedFeature?.values_
+                ? selectedFeature?.values_?.KOD
+                : ""}
             </p>
           </div>
         </div>
@@ -139,7 +187,13 @@ export function ItemModal({ modal, selectedFeature }) {
           <div className="flex items-center justify-center w-full">
             <IonFabButton
               onClick={async () => {
-                const res = await takePhoto(selectedFeature?.values_?.KOD);
+                const res = await takePhoto(
+                  selectedFeature && selectedFeature?.properties
+                    ? selectedFeature?.properties?.KOD
+                    : selectedFeature?.values_
+                    ? selectedFeature?.values_?.KOD
+                    : ""
+                );
                 if (res) {
                   modal.current?.dismiss();
                 }
@@ -171,37 +225,47 @@ export function ScrollModal({ features, selectFeature }) {
   return (
     <IonContent className="w-full h-full ion-padding">
       <div className="flex flex-col gap-4">
-    {loadedFeatures?.map((feature, i: number) => (
-        <div key={i} className="">
-          <IonItem
-        className="w-full rounded-lg cursor-pointer"
-            onClick={() => {
-              selectFeature(feature);
-            }}
-          >
-      {feature && feature.properties ? feature.properties?.NAZEV : feature.values_ ? feature.values_?.NAZEV : ""} - {feature && feature.properties ? feature.properties?.KOD : feature.values_ ? feature.values_?.KOD : ""}
-          </IonItem>
-          {loadedFeatures.length - 1 === i &&
-            features?.length > loadedFeatures.length && (
-              <div className="p-4 w-full flex items-center justify-center">
-                <IonButton
-                  onClick={() => {
-                    setLoadedFeatures([
-                      ...loadedFeatures,
-                      ...features?.slice(
-                        loadedFeatures.length,
-                        loadedFeatures.length + 20,
-                      ),
-                    ]);
-                  }}
-                >
-                  Zobrazit další
-                </IonButton>
-              </div>
-            )}
-        </div>
-      ))}
-    </div>
+        {loadedFeatures?.map((feature, i: number) => (
+          <div key={i} className="">
+            <IonItem
+              className="w-full rounded-lg cursor-pointer"
+              onClick={() => {
+                selectFeature(feature);
+              }}
+            >
+              {feature && feature.properties
+                ? feature.properties?.NAZEV
+                : feature.values_
+                ? feature.values_?.NAZEV
+                : ""}{" "}
+              -{" "}
+              {feature && feature.properties
+                ? feature.properties?.KOD
+                : feature.values_
+                ? feature.values_?.KOD
+                : ""}
+            </IonItem>
+            {loadedFeatures.length - 1 === i &&
+              features?.length > loadedFeatures.length && (
+                <div className="p-4 w-full flex items-center justify-center">
+                  <IonButton
+                    onClick={() => {
+                      setLoadedFeatures([
+                        ...loadedFeatures,
+                        ...features?.slice(
+                          loadedFeatures.length,
+                          loadedFeatures.length + 20
+                        ),
+                      ]);
+                    }}
+                  >
+                    Zobrazit další
+                  </IonButton>
+                </div>
+              )}
+          </div>
+        ))}
+      </div>
     </IonContent>
   );
 }

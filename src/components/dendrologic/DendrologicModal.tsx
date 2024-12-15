@@ -18,12 +18,16 @@ import { api_url } from "@/lib/config";
 import { usePhotoGallery } from "@/hooks/usePhotoGallery";
 import { ItemModal, ScrollModal } from "./DendrologicSearch";
 
-export default function DendrologicModal({ selectedFeature, close, selected, selectFeature }) {
+export default function DendrologicModal({
+  selectedFeature,
+  close,
+  selected,
+  selectFeature,
+}) {
   const modal = useRef<HTMLIonModalElement>(null);
 
   return (
     <IonModal
-      className="rounded-lg shadow"
       onDidDismiss={() => {
         selectFeature(null);
         close();

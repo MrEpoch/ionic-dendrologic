@@ -100,7 +100,7 @@ export default function OpenLayers({ geoJSONData }) {
   };
 
   const [selectedFeature, setSelectedFeature] = React.useState<null | any>(
-    null,
+    null
   );
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function OpenLayers({ geoJSONData }) {
         {
           dataProjection: "EPSG:4326",
           featureProjection: "EPSG:3857",
-        },
+        }
       ),
     });
 
@@ -135,7 +135,7 @@ export default function OpenLayers({ geoJSONData }) {
         center: transform(
           [15.243629268374999, 49.272716766783859],
           "EPSG:4326",
-          "EPSG:3857",
+          "EPSG:3857"
         ),
         zoom: 7,
       }),
@@ -164,10 +164,14 @@ export default function OpenLayers({ geoJSONData }) {
   return (
     <>
       <div className="w-full min-h-screen" id="map">
-        <DendrologicSearch selected={selected} selectFeature={selectFeature} geoJSONData={geoJSONData} />
+        <DendrologicSearch
+          selected={selected}
+          selectFeature={selectFeature}
+          geoJSONData={geoJSONData}
+        />
         <DendrologicModal
-    selectFeature={selectFeature}
-    selected={selected}
+          selectFeature={selectFeature}
+          selected={selected}
           close={selectedFeatureToNull}
           selectedFeature={selectedFeature}
         />

@@ -27,7 +27,7 @@ export default function DendrologicInfoModal({
       initialBreakpoint={0.25}
       breakpoints={[0, 0.25, 0.5, 0.75, 1]}
     >
-      <div className="p-4 rounded">
+      <div className="">
         <div className="flex rounded justify-center gap-4 w-full items-center">
           <IonFabButton
             onClick={async () => {

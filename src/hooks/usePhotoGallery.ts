@@ -28,7 +28,7 @@ export function usePhotoGallery() {
   const savePicture = async (
     photo: Photo,
     fileName: string,
-    kod: string,
+    kod: string
   ): Promise<UserPhoto | null> => {
     let base64Data: string = photo.base64String as string;
 

@@ -102,7 +102,7 @@ export function AuthForm({
               return setError("Koruptovaná data.");
             case "TOO_MANY_REQUESTS":
               return setError(
-                "Byl překročen počet požadavků pro danou IP adresu.",
+                "Byl překročen počet požadavků pro danou IP adresu."
               );
           }
           if (userResponse.redirect) return history.push(userResponse.redirect);
@@ -158,7 +158,7 @@ export function AuthForm({
               return history.push("/auth/login");
             case "TOO_MANY_REQUESTS":
               return setError(
-                "Byl překročen počet požadavků pro danou IP adresu.",
+                "Byl překročen počet požadavků pro danou IP adresu."
               );
           }
         }

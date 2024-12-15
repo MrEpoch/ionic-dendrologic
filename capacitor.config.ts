@@ -6,6 +6,9 @@ const config: CapacitorConfig = {
   appName: "ionic-dendrologic",
   webDir: "dist",
   plugins: {
+    SplashScreen: {
+      launchShowDuration: 2000,
+    },
     CapacitorHttp: {
       enabled: true,
     },
