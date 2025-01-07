@@ -7,7 +7,7 @@ http://ionicframework.com/docs/theming/ */
 
 @layer base {
   :root {
-    --ion-color-primary: #13ae5a; /* Main primary color (green) */
+    --ion-color-primary: #1e2022; /* Main primary color (green) */
     --ion-color-primary-rgb: 19, 174, 90; /* RGB equivalent of the primary color */
     --ion-color-primary-contrast: #ffffff; /* Color that contrasts well with primary (white) */
     --ion-color-primary-contrast-rgb: 255, 255, 255; /* RGB equivalent of the contrast color */
@@ -45,6 +45,17 @@ http://ionicframework.com/docs/theming/ */
     --ring: 144 20% 80%;
 
     --radius: 0.3rem;
+
+    --primary-100: #272343;
+    --primary-200: #788e98;
+    --primary-300: #f0f5f9;
+    --accent-100: #788189;
+    --accent-200: #e1e4e6;
+    --text-100: #1e2022;
+    --text-200: #52616b;
+    --bg-100: #ffffff;
+    --bg-200: #e3f6f5;
+    --bg-300: #bae8e8;
   }
 
   @media (prefers-color-scheme: dark) {

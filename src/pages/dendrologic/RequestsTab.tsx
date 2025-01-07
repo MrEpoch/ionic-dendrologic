@@ -9,7 +9,7 @@ const RequestsTab = () => {
           <IonTitle>Dendrologic requests</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <div className="flex gap-4 flex-col dark:bg-background bg-background h-full w-full">
+      <div className="flex gap-4 flex-col bg-main-background-200 h-full w-full">
         <DendrologicRequests />
       </div>
     </IonPage>

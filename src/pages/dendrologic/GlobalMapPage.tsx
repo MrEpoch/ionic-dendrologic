@@ -4,7 +4,7 @@ import { IonPage } from "@ionic/react";
 const GlobalMapPage = () => {
   return (
     <IonPage>
-      <div className="flex gap-4 flex-col dark:bg-background bg-background h-full w-full">
+      <div className="flex gap-4 flex-col bg-main-background-100 h-full w-full">
         <GlobalDendrologic />
       </div>
     </IonPage>

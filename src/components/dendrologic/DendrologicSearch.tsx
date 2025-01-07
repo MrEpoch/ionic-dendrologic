@@ -15,6 +15,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { usePhotoGallery } from "@/hooks/usePhotoGallery";
 import { api_url } from "@/lib/config";
 import { CapacitorHttp } from "@capacitor/core";
+import { useHistory } from "react-router";
 
 export default function DendrologicSearch({
   geoJSONData,
@@ -215,6 +216,10 @@ export function ScrollModal({ features, selectFeature }) {
   useEffect(() => {
     if (features !== undefined && features !== null && features.length > 0) {
       setLoadedFeatures(features.slice(0, 20));
+    }
+
+    if (features !== undefined && features && features.length === 1) {
+      selectFeature(features[0]);
     }
 
     return () => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { simplify } from "@turf/turf";
 import "./Geolocation.css";
 
-import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style.js";
+import { Circle as CircleStyle, Fill, Stroke, Style, Text } from "ol/style.js";
 import GeoJSON from "ol/format/GeoJSON.js";
 import { OSM, Vector as VectorSource } from "ol/source.js";
 import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer.js";
@@ -23,79 +23,47 @@ export default function OpenLayers({ geoJSONData }) {
     setSelected(feature);
   }
 
-  const image = new CircleStyle({
-    radius: 5,
-    stroke: new Stroke({ color: "#0D2617", width: 11 }),
-  });
-
-  const styles = {
-    Point: new Style({
-      image: image,
-    }),
-    Geometry: new Style({
-      image: image,
-    }),
-    LineString: new Style({
-      stroke: new Stroke({
-        color: "green",
-        width: 1,
-      }),
-    }),
-    MultiLineString: new Style({
-      stroke: new Stroke({
-        color: "green",
-        width: 1,
-      }),
-    }),
-    MultiPoint: new Style({
-      image: image,
-    }),
-    MultiPolygon: new Style({
-      stroke: new Stroke({
-        color: "yellow",
-        width: 1,
-      }),
-      fill: new Fill({
-        color: "rgba(255, 255, 0, 0.1)",
-      }),
-    }),
-    Polygon: new Style({
-      stroke: new Stroke({
-        color: "green",
-        lineDash: [4],
-        width: 3,
-      }),
-      fill: new Fill({
-        color: "rgba(0, 0, 255, 0.1)",
-      }),
-    }),
-    GeometryCollection: new Style({
-      stroke: new Stroke({
-        color: "green",
-        width: 2,
-      }),
-      fill: new Fill({
-        color: "green",
-      }),
-      image: new CircleStyle({
-        radius: 10,
-        stroke: new Stroke({
-          color: "green",
-        }),
-      }),
-    }),
-    Circle: new Style({
-      stroke: new Stroke({
-        color: "green",
-        width: 2,
-      }),
-      fill: new Fill({
-        color: "rgba(255,0,0,0.2)",
-      }),
-    }),
-  };
+  function colorIntensity(size) {
+    if (size === 1) {
+      return "#FFE599";
+    } else if (size < 10) {
+      return "#FFD966";
+    } else if (size < 20) {
+      return "#F4B183";
+    } else if (size < 50) {
+      return "#D24D27";
+    } else {
+      return "#A50026";
+    }
+  }
 
   const styleFunction = function (feature) {
+    const size = feature.get("features").length;
+    const styles = {
+      Point: new Style({
+        image: new CircleStyle({
+          radius: 5,
+          fill: new Fill({
+            color: colorIntensity(size),
+          }),
+          stroke: new Stroke({
+            color: colorIntensity(size),
+            width: 5,
+          }),
+        }),
+      }),
+      Polygon: new Style({
+        stroke: new Stroke({
+          color: "var(--text-main-background-100)",
+          lineDash: [4],
+          width: 3,
+        }),
+        fill: new Fill({
+          color: "var(--text-main-background-100)",
+        }),
+      }),
+    };
+
     return styles[feature.getGeometry().getType()];
   };
 
